@@ -1,11 +1,16 @@
 ---
+output:
+  html_document: default
+  pdf_document: default
+---
+---
 title: 'STAT 231: Problem Set 0'
-author: "YOUR NAME HERE"
+author: "Xander Schwartz"
 date: "due by 5 PM on Thursday, Janurary 30"
 output:
   html_document:
     df_print: paged
----
+---s
 
 This lab is a modified version of a lab developed by Mine Cetinkaya-Rundel.
 
@@ -64,7 +69,7 @@ To find out more about the dataset, type the following in your Console: `?datasa
 
 Based on the help file, how many rows and how many columns does the `datasaurus_dozen` file have? What are the variables included in the data frame? After you've added your response below, commit your changes with the commit message "Added answer for Ex 1", and push.
 
-> RESPONSE:
+> RESPONSE: 1846
 
 Let's take a look at what these datasets are. To do so we can make a *frequency table* of the dataset variable:
 
@@ -81,7 +86,7 @@ datasaurus_dozen %>%
 
 Calculate the correlation coefficient between `x` and `y` for the `dino` dataset.  Below is the code you will need to complete this exercise. Basically, the answer is already given, but you need to include relevant bits in your Rmd document and successfully knit it and view the results.  What does this correlation coefficient imply about the relationship between `x` and `y` in the `dino` dataset? 
 
-> RESPONSE: 
+> RESPONSE: -0.06447185	that there is weak negative correlation. 
  
 ```{r}
 # Start with the `datasaurus_dozen` and pipe it into the `filter` function to filter for observations where `dataset == "dino"`. Store the resulting filtered data frame as a new data frame called `dino_data`.
@@ -100,7 +105,7 @@ If this seems like a lot, don't worry.  You will learn about the philosophy of b
 
 What do you notice now about the relationship between x and y?
 
-> RESPONSE:
+> RESPONSE: That it creates a picture of a dino. 
 
 ```{r fig.fullwidth=TRUE}
 ggplot(data = dino_data, mapping = aes(x = x, y = y)) +
@@ -117,15 +122,24 @@ Calculate the correlation coefficient between `x` vs. `y` for the `star` dataset
 > RESPONSE: 
 
 ```{r}
+# Start with the `datasaurus_dozen` and pipe it into the `filter` function to filter for observations where `dataset == "dino"`. Store the resulting filtered data frame as a new data frame called `dino_data`.
+dino_data <- datasaurus_dozen %>%
+  filter(dataset == "star")
 
+# Calculate a summary statistic that we call `r` equal to the correlation coefficient between `x` and `y` for the `dino` dataset 
+dino_data %>%
+  summarize(r = cor(x, y))
 ```
 
 Then, plot `y` versus `x` for the `star` dataset.  Does the plot look the same as the plot of the `dino` data?
 
 > RESPONSE:
 
-```{r}
 
+```{r fig.fullwidth=TRUE}
+ggplot(data = star, mapping = aes(x = x, y = y)) +
+  geom_point()
+```
 ```
 
 
