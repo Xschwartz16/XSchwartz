@@ -44,17 +44,25 @@ Figure 3.3 in Section 3.1.1 shows a scatterplot that uses both location and labe
 data(CIACountries)
 
 # define the plot object
-g <- 
+g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
   
 # print the plot 
-g
+g+ geom_point(size=3)
+g+ geom_point(aes(color =net_users ), size =3)
+g+ geom_text(aes(label = country, color =net_users ), size =3)
+
+
 ```
 
 ### b.
 Now, update the plot with more informative labels.  Label the x-axis "% of GDP spent on education" and the y-axis "Gross Domestic Product (GDP)".  Hint: see Section 3.2.2 for an example of one way to label the axes.
 
 ```{r}
-
+# define the plot object
+g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
+  
+# print the plot 
+g+  geom_text(aes(label = country, color =net_users ), size =3)+ xlab("% of GDP spent on education")+ylab("Gross Domestic Product (GDP)")
 
 ```
 
@@ -62,15 +70,54 @@ Now, update the plot with more informative labels.  Label the x-axis "% of GDP s
 Next, move the legend so that it's located on the top of the plot as opposed to the right of the plot.  Hint: see Section 3.1.4 for an example on how to change the legend position.
 
 ```{r}
-
+# define the plot object
+g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
+  
+# print the plot 
+g+  geom_text(aes(label = country, color =net_users ), size =3)+ xlab("% of GDP spent on education")+ylab("Gross Domestic Product (GDP)") + theme(legend.position = "top")
 ```
 
 ### d.
 Lastly, Section 3.1.2 discusses *scale*, and demonstrates how to display GDP on a logarithmic scale to better discern differences in GDP.  Update the figure so GDP is on a log10 scale.  
 
 ```{r}
+```{r}
+data(CIACountries)
+
+# define the plot object
+g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
+  
+# print the plot 
+g+ geom_point(size=3)
+g+ geom_point(aes(color =net_users ), size =3)
+g+ geom_text(aes(label = country, color =net_users ), size =3)
+
 
 ```
+
+### b.
+Now, update the plot with more informative labels.  Label the x-axis "% of GDP spent on education" and the y-axis "Gross Domestic Product (GDP)".  Hint: see Section 3.2.2 for an example of one way to label the axes.
+
+```{r}
+# define the plot object
+g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
+  
+# print the plot 
+g+  geom_text(aes(label = country, color =net_users ), size =3)+ xlab("% of GDP spent on education")+ylab("Gross Domestic Product (GDP)")
+
+```
+
+### c.
+Next, move the legend so that it's located on the top of the plot as opposed to the right of the plot.  Hint: see Section 3.1.4 for an example on how to change the legend position.
+
+```{r}
+# define the plot object
+g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
+  
+# print the plot 
+g+  geom_text(aes(label = country, color =net_users ), size =3)+ xlab("% of GDP spent on education")+ylab("Gross Domestic Product (GDP)") + theme(legend.position = "top") + coord_trans(y="log10")
+```
+
 
 
 \newpage 
