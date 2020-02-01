@@ -156,7 +156,12 @@ p
 
 As you read through (and, better yet -- code along with (not required, but useful practice!)) -- the extended example on historical baby names in section 3.3.1, write down two questions you have about any of the R code used in that example.  (Your questions could be about what a specific part of the code -- ggplot or not -- is actually doing, or a more general question about any of the commands used.)  Please be thoughtful about your questions; we will use them (anonymously) in an exercise in class this week.
 
-> ANSWER: 
+> ANSWER: What are the differences in different pipings ("%>%" vs "%+%")? What are the different ways to add features to an object? Is it better to pipe or just redefine the object as "x <- x + ..."?
+In Java there is a distinct difference between "=" and "==". I noticed both being used in R. What is the difference here? 
+
+
+
+
 
 ```{r}
 # to get you started following along . . .
