@@ -81,41 +81,13 @@ g+  geom_text(aes(label = country, color =net_users ), size =3)+ xlab("% of GDP 
 Lastly, Section 3.1.2 discusses *scale*, and demonstrates how to display GDP on a logarithmic scale to better discern differences in GDP.  Update the figure so GDP is on a log10 scale.  
 
 ```{r}
-```{r}
-data(CIACountries)
+
 
 # define the plot object
 g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
   
 # print the plot 
-g+ geom_point(size=3)
-g+ geom_point(aes(color =net_users ), size =3)
-g+ geom_text(aes(label = country, color =net_users ), size =3)
-
-
-```
-
-### b.
-Now, update the plot with more informative labels.  Label the x-axis "% of GDP spent on education" and the y-axis "Gross Domestic Product (GDP)".  Hint: see Section 3.2.2 for an example of one way to label the axes.
-
-```{r}
-# define the plot object
-g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
-  
-# print the plot 
-g+  geom_text(aes(label = country, color =net_users ), size =3)+ xlab("% of GDP spent on education")+ylab("Gross Domestic Product (GDP)")
-
-```
-
-### c.
-Next, move the legend so that it's located on the top of the plot as opposed to the right of the plot.  Hint: see Section 3.1.4 for an example on how to change the legend position.
-
-```{r}
-# define the plot object
-g <- ggplot(data = CIACountries, aes(y=gdp, x=educ))
-  
-# print the plot 
-g+  geom_text(aes(label = country, color =net_users ), size =3)+ xlab("% of GDP spent on education")+ylab("Gross Domestic Product (GDP)") + theme(legend.position = "top") + coord_trans(y="log10")
+g+  geom_text(aes(label = country, color =net_users ), size =3)+ xlab("% of GDP spent on education")+ylab("Gross Domestic Product (GDP)") + theme(legend.position = "top")+ coord_trans(y="log10")
 ```
 
 
@@ -157,7 +129,7 @@ p
 As you read through (and, better yet -- code along with (not required, but useful practice!)) -- the extended example on historical baby names in section 3.3.1, write down two questions you have about any of the R code used in that example.  (Your questions could be about what a specific part of the code -- ggplot or not -- is actually doing, or a more general question about any of the commands used.)  Please be thoughtful about your questions; we will use them (anonymously) in an exercise in class this week.
 
 > ANSWER: What are the differences in different pipings ("%>%" vs "%+%")? What are the different ways to add features to an object? Is it better to pipe or just redefine the object as "x <- x + ..."?
-In Java there is a distinct difference between "=" and "==". I noticed both being used in R. What is the difference here? 
+  In Java there is a distinct difference between "=" and "==". I noticed both being used in R. What is the difference here? 
 
 
 
