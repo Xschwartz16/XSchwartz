@@ -23,7 +23,8 @@ Steps to proceed:
 
 ```{r, setup, include=FALSE}
 # Load packages here 
-library(mdsr)   
+library(mdsr)
+
 options(scipen=10000)
 knitr::opts_chunk$set(
   tidy=FALSE,     # display code as typed
@@ -99,6 +100,8 @@ Note: be sure you load the `nasaweather` package and use the `storms` dataset fr
 
 ```{r}
 
+
+ggplot(data = storms,aes(x=long,y=lat,color=name))+geom_path()+facet_wrap(~year)+scale_color_discrete(guide="none")
 ```
 
  
