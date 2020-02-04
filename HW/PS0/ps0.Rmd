@@ -10,7 +10,7 @@ date: "due by 5 PM on Thursday, Janurary 30"
 output:
   html_document:
     df_print: paged
----s
+---
 
 This lab is a modified version of a lab developed by Mine Cetinkaya-Rundel.
 
