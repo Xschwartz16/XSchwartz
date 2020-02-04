@@ -1,13 +1,14 @@
 ---
-title: "UN Votes"
-author: 'Xander Schwartz'
-date: "`r Sys.Date()`"
-output:
-  html_document:
-  toc: yes
-  toc_float: yes
 pdf_document:
   toc: yes
+author: "Xander Schwartz"
+date: "`r Sys.Date()`"
+output:
+  html_document: null
+  pdf_document: default
+  toc: yes
+  toc_float: yes
+title: "UN Votes"
 ---
 
 Thank you to Mine Cetinkaya-Rundel for this lab.
@@ -95,13 +96,12 @@ un_votes %>%
     percent_yes = mean(vote == "yes")
     ) %>%
   filter(votes > 5) %>%  # only use records where there are more than 5 votes
-ggplot(un_votes,mapping=aes(x=year,y=percent_yes,col=country,shape=country,linetype=country))+geom_point()+geom_smooth(se=F)+scale_color_manual(values = c("#147514","#b88b32","#371b7d"))+ 
+ggplot(un_votes,mapping=aes(x=year,y=percent_yes,col=country,shape=country,linetype=country))+geom_point()+geom_smooth(se=F)+scale_color_manual(values = c("#4A9B7A","#CA6727","#7470AE"))+ 
     labs(
       title = "Percentage of 'Yes' votes in the UN General Assembly",
       subtitle = "1946 to 2015",
       y = "% Yes",
-      x = "Year"
-    )
+      x = "Year")
 
 
 
