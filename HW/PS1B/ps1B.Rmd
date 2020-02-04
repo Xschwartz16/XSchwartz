@@ -1,0 +1,104 @@
+---
+title: "STAT 231: Problem Set 1B"
+author: "Xander Schwartz"
+date: "due by 5 PM on Friday, February 7"
+output: pdf_document
+---
+
+Series B homework assignments are designed to help you further ingest and practice the material covered in class over the past week(s).  You are encouraged to work with other students, but all code must be written by you and you must indicate below who you discussed the assignment with (if anyone).  
+
+Steps to proceed:
+
+\begin{enumerate}
+\item In RStudio, go to File > Open Project, navigate to the folder with the course-content repo, select the course-content project (course-content.Rproj), and click "Open" 
+\item Pull the course-content repo (e.g. using the blue-ish down arrow in the Git tab in upper right window)
+\item Copy ps1B.Rmd from the course repo to your repo (see page 6 of the GitHub Classroom Guide for Stat231 if needed)
+\item Close out of the course repo project in RStudio
+\item Open up your repo project in RStudio
+\item In the ps1B.Rmd file in YOUR repo, replace "YOUR NAME HERE" with your name
+\item Add in your responses, committing and pushing to YOUR repo in appropriate places along the way
+\item Run "Knit PDF" 
+\item Upload the pdf to Gradescope
+\end{enumerate}
+
+```{r, setup, include=FALSE}
+# Load packages here 
+library(mdsr)   
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small",   # slightly smaller font for code
+  message=FALSE)   
+```
+
+\newpage 
+
+# If you discussed this assignment with any of your peers, please list who here:
+
+> ANSWER:
+
+
+
+\newpage
+# MDSR Exercise 2.5 (modified)
+
+Consider the data graphic for Career Paths at Williams College at: https://web.williams.edu/Mathematics/devadoss/careerpath.html.  Focus on the graphic under the "Major-Career" tab.
+
+
+a. What story does the data graphic tell?  What is the main message that you take away from it?
+
+> ANSWER:The data shows the relationships between what students studied at Williams and what career path they took. The data shows that in almost every career there are students from every discipline (and vice versa). 
+
+b. Can the data graphic be described in terms of the taxonomy presented in this chapter?  If so, list the visual cues, coordinate system, and scale(s).  If not, describe the feature of this data graphic that lies outside of that taxonomy.
+
+> ANSWER: Thee graphic uses a somewwhat confusing coordinatae system that is probably closer to polar (as it is a circle) than anything else. In this chart, the data is made of of strands connecting to other parts of the other semi-circle (there are two distinct semi-circles of careers and studies, and they strands do not connect within the same semi-circle). There are some relatively arbitraray color scales in use showing the discipline (green for STEM, blue for social studies, etc.) and the thickness of the strands represents the amount of connenctions (presumably).
+
+c. Critique and/or praise the visualization choices made by the designer.  Do they work? Are they misleading?  Thought-provoking?  Brilliant?  Are there things that you would have done differently?  Justify your response.
+
+> ANSWER: In my mind, there is too much going on to fully understand everything. While it is very concise in packing a lot of informtion in, it might almost be easier to have 14 seperate scaled pie charts of each discipline showing career paths than this mess. It feels like the designer prioritized artsiness over clarity. 
+
+
+\newpage
+# Spot the Error (non-textbook problem)
+
+Explain why the following command does not color the data points blue, then write down the command that will turn the points blue.
+
+> ANSWER: In this exaample, mapping was setting the legend to say "blue" rather than the points. 
+
+```{r}
+library(ggplot2)
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+```
+
+```{r}
+library(ggplot2)
+ggplot(data = mpg,mapping = aes(x = displ, y = hwy)) + 
+  geom_point(color="blue")
+```
+
+
+\newpage
+# MDSR Exercise 3.6 (modified)
+
+Use the `MLB_teams` data in the `mdsr` package to create an informative data graphic that illustrates the relationship between winning percentage and payroll in context. What story does this graph tell?
+
+> ANSWER:
+
+```{r}
+ggplot(data = MLB_teams, aes())
+```
+
+
+\newpage
+# MDSR Exercise 3.10 (modified)
+
+Using data from the `nasaweather` package, use the `geom_path()` function to plot the path of each tropical storm in the `storms` data table (use variables `lat` (y-axis!) and `long` (x-axis!)).  Use color to distinguish the storms from one another, and use facetting to plot each `year` in its own panel.  Remove the legend of storm names/colors by adding `scale_color_discrete(guide="none")`. 
+
+Note: be sure you load the `nasaweather` package and use the `storms` dataset from that package!  
+
+```{r}
+
+```
+
+ 
