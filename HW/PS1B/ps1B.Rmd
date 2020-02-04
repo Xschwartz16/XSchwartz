@@ -24,7 +24,7 @@ Steps to proceed:
 ```{r, setup, include=FALSE}
 # Load packages here 
 library(mdsr)   
-
+options(scipen=10000)
 knitr::opts_chunk$set(
   tidy=FALSE,     # display code as typed
   size="small",   # slightly smaller font for code
@@ -83,10 +83,10 @@ ggplot(data = mpg,mapping = aes(x = displ, y = hwy)) +
 
 Use the `MLB_teams` data in the `mdsr` package to create an informative data graphic that illustrates the relationship between winning percentage and payroll in context. What story does this graph tell?
 
-> ANSWER:
+> ANSWER:The chart shows a positive but not overly strong correlation between winning perecentage and paayroll. The slope seems to show more signifigance at higher ends of the spectrum than in the middle. This indicates that payroll is a decent predictor of on field success, although correlataion and causation are likely not the same in this scenario, as many baseball teamas are not spending money becausee their teams are not good in the first place, as opposed to vice versa (you might as well save money on the payroll while the team is bad). 
 
 ```{r}
-ggplot(data = MLB_teams, aes())
+ggplot(data = MLB_teams, aes(x=WPct,y=payroll,color=payroll))+geom_point()+geom_smooth(se=F)
 ```
 
 
