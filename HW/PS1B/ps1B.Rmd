@@ -87,7 +87,7 @@ Use the `MLB_teams` data in the `mdsr` package to create an informative data gra
 > ANSWER:The chart shows a positive but not overly strong correlation between winning perecentage and paayroll. The slope seems to show more signifigance at higher ends of the spectrum than in the middle. This indicates that payroll is a decent predictor of on field success, although correlataion and causation are likely not the same in this scenario, as many baseball teamas are not spending money becausee their teams are not good in the first place, as opposed to vice versa (you might as well save money on the payroll while the team is bad). 
 
 ```{r}
-ggplot(data = MLB_teams, aes(x=WPct,y=payroll,color=payroll))+geom_point()+geom_smooth(se=F)
+ggplot(data = MLB_teams, aes(x=WPct,y=payroll,alpha=.8))+geom_point(aes(color=MLB_teams$teamID))+geom_smooth(se=F,color="Black")
 ```
 
 
