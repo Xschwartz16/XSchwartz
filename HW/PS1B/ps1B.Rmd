@@ -52,11 +52,11 @@ a. What story does the data graphic tell?  What is the main message that you tak
 
 b. Can the data graphic be described in terms of the taxonomy presented in this chapter?  If so, list the visual cues, coordinate system, and scale(s).  If not, describe the feature of this data graphic that lies outside of that taxonomy.
 
-> ANSWER: Thee graphic uses a somewwhat confusing coordinatae system that is probably closer to polar (as it is a circle) than anything else. In this chart, the data is made of of strands connecting to other parts of the other semi-circle (there are two distinct semi-circles of careers and studies, and they strands do not connect within the same semi-circle). There are some relatively arbitraray color scales in use showing the discipline (green for STEM, blue for social studies, etc.) and the thickness of the strands represents the amount of connenctions (presumably).
+> ANSWER: Thee graphic uses a somewwhat confusing coordinate system that is probably closer to polar (as it is a circle) than anything else. In this chart, the data is made of of strands connecting to other parts of the other semi-circle (there are two distinct semi-circles of careers and studies, and the strands do not connect within the same semi-circle). There are some relatively arbitrary color scales in use showing the discipline (green for STEM, blue for social studies, etc.) and the thickness of the strands represents the amount of connenctions (presumably).
 
 c. Critique and/or praise the visualization choices made by the designer.  Do they work? Are they misleading?  Thought-provoking?  Brilliant?  Are there things that you would have done differently?  Justify your response.
 
-> ANSWER: In my mind, there is too much going on to fully understand everything. While it is very concise in packing a lot of informtion in, it might almost be easier to have 14 seperate scaled pie charts of each discipline showing career paths than this mess. It feels like the designer prioritized artsiness over clarity. 
+> ANSWER: In my mind, there is too much going on to fully understand everything. While it is very concise in packing a lot of informtion in one chart, it might  be easier to have 14 seperate scaled pie charts of each discipline showing career paths than this mess. It feels like the designer prioritized artsiness over clarity. 
 
 
 \newpage
@@ -84,10 +84,13 @@ ggplot(data = mpg,mapping = aes(x = displ, y = hwy)) +
 
 Use the `MLB_teams` data in the `mdsr` package to create an informative data graphic that illustrates the relationship between winning percentage and payroll in context. What story does this graph tell?
 
-> ANSWER:The chart shows a positive but not overly strong correlation between winning perecentage and paayroll. The slope seems to show more signifigance at higher ends of the spectrum than in the middle. This indicates that payroll is a decent predictor of on field success, although correlataion and causation are likely not the same in this scenario, as many baseball teamas are not spending money becausee their teams are not good in the first place, as opposed to vice versa (you might as well save money on the payroll while the team is bad). 
+> ANSWER:The chart shows a positive but not overly strong correlation between winning perecentage and payroll. The slope seems to show more signifigance at higher ends of the spectrum than in the middle. This indicates that payroll is a decent predictor of on field success, although correlataion and causation are likely not the same in this scenario, as many baseball teamas are not spending money because their teams are not good in the first place, as opposed to vice versa (you might as well save money on the payroll while the team is bad). 
 
 ```{r}
-ggplot(data = MLB_teams, aes(x=WPct,y=payroll,alpha=.8))+geom_point(aes(color=MLB_teams$teamID))+geom_smooth(se=F,color="Black")
+Teams <- MLB_teams$teamID
+ggplot(data = MLB_teams, aes(x=WPct,y=payroll,alpha=.8))+
+  geom_point(aes(color=Teams)) +geom_smooth(se=F,color="Black")+
+  theme(legend.position="bottom")
 ```
 
 
@@ -101,7 +104,10 @@ Note: be sure you load the `nasaweather` package and use the `storms` dataset fr
 ```{r}
 
 
-ggplot(data = storms,aes(x=long,y=lat,color=name))+geom_path()+facet_wrap(~year)+scale_color_discrete(guide="none")
+ggplot(data = storms,aes(x=long,y=lat,color=name))+
+  geom_path()+
+  facet_wrap(~year)+
+  scale_color_discrete(guide="none")
 ```
 
  
