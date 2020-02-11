@@ -126,6 +126,9 @@ Now implement those steps in R, tidying the dataset for plotting.  After the fin
 ```{r}
 
 
+covSpen <- inner_join(coverage, spending, by = "Location")
+covSpen <- clean_names(covSpen,"snake")
+# ggplot(data = covSpen, aes) +
 
 
 ```
