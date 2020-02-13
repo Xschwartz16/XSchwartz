@@ -1,0 +1,161 @@
+---
+title: 'STAT 231: Problem Set 2B'
+author: "Xander Schwartz"
+date: "due by 5 PM on Monday, February 17"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+Series B homework assignments are designed to help you futher ingest and practice the material covered in class over the past week(s).  You are encouraged to work with other students, but all code must be written by you and you must indicate below who you discussed the assignment with (if anyone).  
+
+Steps to proceed:
+
+\begin{enumerate}
+\item In RStudio, go to File > Open Project, navigate to the folder with the course-content repo, select the course-content project (course-content.Rproj), and click "Open" 
+\item Pull the course-content repo (e.g. using the blue-ish down arrow in the Git tab in upper right window)
+\item Copy ps2B.Rmd from the course repo to your repo (see page 6 of the GitHub Classroom Guide for Stat231 if needed)
+\item Close out of the course repo project in RStudio
+\item Open up your repo project in RStudio
+\item In the ps2B.Rmd file in YOUR repo, replace "YOUR NAME HERE" with your name
+\item Add in your responses, committing and pushing to YOUR repo in appropriate places along the way
+\item Run "Knit PDF" 
+\item Upload the pdf to Gradescope
+\end{enumerate}
+
+```{r, setup, include=FALSE}
+library(mdsr)   
+library(tidyverse)
+library(Lahman)
+
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+\newpage 
+
+# If you discussed this assignment with any of your peers, please list who here:
+
+> ANSWER:
+
+\newpage
+# MDSR Exercise 4.14 (modified)
+
+Use the `Pitching` data frame from the `Lahman` package to identify every pitcher in baseball history who has accumulated at least 300 wins (`W`) and at least 3,000 strikeouts (`SO`).  
+
+a. How many pitchers meet this criteria?  
+
+> ANSWER: 10 Pitchers
+
+```{r}
+glimpse(Pitching)
+
+PitchingSzns <- Pitching %>% group_by(playerID) %>% summarize(tKs = sum(SO),tW=sum(W))
+
+GoodPitching <- PitchingSzns %>% filter(tW > 300 & tKs > 3000)
+GoodPitching
+nrow(GoodPitching)
+```
+
+b. Which of these pitchers had the most accumulated strikeouts?  How many strikeouts had he accumulated?  What is the most strikeouts he had in one season?
+
+> ANSWER: Nolan Ryan has the most (5714) he had 383 in 1973. 
+
+```{r}
+Nolan <- filter(Pitching, playerID == "ryanno01")%>%select(playerID, SO, yearID)%>% arrange(desc(SO))
+Nolan
+
+```
+
+
+\newpage 
+# MDSR Exercise 4.17 (modified)
+
+a. The Violations data set in the `mdsr` package contains information regarding the outcome of health inspections in New York City.  Use these data to calculate the median violation score by zipcode and dba for zipcodes in Manhattan.  What pattern do you see between the number of inspections and the median score?  Generate a visualization to support your response.  
+
+> ANSWER:  There is some positive relationship between the number of inpections and mediann violation score. In other words, on average the higher the mediann score the higher the on average number of inspections. 
+
+```{r}
+Violations
+ManVio <- Violations %>% filter(boro=="MANHATTAN")%>% filter(!is.na(score))%>% group_by(zipcode) %>% summarize(MedianViolationScore = median(score),InspectionCount = count(inspection_date))
+ManVioDba <- Violations  %>% filter(boro=="MANHATTAN")%>% filter(!is.na(score)) %>% group_by(dba) %>% summarize(MedianViolationScore = median(score), InspectionCount = count(inspection_date))
+# ManVioDba
+# ManVio
+ggplot(ManVio, aes(x = MedianViolationScore, y=InspectionCount))+geom_point()+geom_smooth()
+ggplot(ManVioDba, aes(x = MedianViolationScore, y=InspectionCount))+geom_point()+geom_smooth()
+ManVioDba%>%arrange(desc(InspectionCount))
+
+```
+
+b.  In your visualization in part (a), there should be at least a few points that stand out as outliers.  For *one of the outliers*, add text to the outlier identifying what business it is and an arrow pointing from the text to the observation.  First, you may want to `filter` to identify the name of the business (so you know what text to add to the plot).  
+
+(Can't remember how to create a curved arrow in `ggplot`?  Can't remember how to add text to the plot in `ggplot`?  Check out the answers to questions #5 and #8, respectively, in the Moodle R Q&A forum!)
+
+```{r}
+ggplot(ManVioDba, aes(x = MedianViolationScore, y=InspectionCount))+geom_point()+geom_smooth()+
+geom_curve(x = 106, xend = 112, y = 15, yend = 16.5, 
+           arrow = arrow(length = unit(.5,"cm")), curvature = .5) +
+  geom_label(label="Roxy Diner",  x=105, y=14, label.size = 0
+             .2)
+```
+
+
+\newpage
+# MDSR Exercise 5.7
+
+Generate the code to convert the data frame shown with this problem in the textbook (on page 130) to wide format (e.g. see result table).  Hint: use `gather()` in conjuction with `spread()`.
+
+
+```{r}
+FakeDataLong <- data.frame(grp = c("A","A","B", "B")
+                           , sex = c("F", "M", "F", "M")
+                           , meanL = c(0.22, 0.47, 0.33, 0.55)
+                           , sdL = c(0.11, 0.33, 0.11, 0.31)
+                           , meanR = c(0.34, 0.57, 0.40, 0.65)
+                           , sdR = c(0.08, 0.33, 0.07, 0.27))
+FakeDataLong2 <- FakeDataLong %>%gather(key = "hold", value = "gender", 3:6) 
+ FakeDataLong3 <- FakeDataLong2%>%unite(col = "hold2", sex, hold, sep = ".")
+ FakeDataLong4 <- FakeDataLong3%>%spread(key = hold2, value = gender)
+ FakeDataLong4
+```
+
+
+
+
+\newpage 
+# Valentine's Day Spending
+
+The below code imports data from The National Retailer Foundation on what proportion of people spend and how much people spend on Valentine's Day (data source: https://www.makeovermonday.co.uk/data/data-sets-2017/).  (The reliability of this data is questionable as I cannot determine the original source of the data!  So take the numbers with a grain of salt . . .)
+
+```{r}
+valentine <- read_csv("http://kcorreia.people.amherst.edu/S1920/Valentines_Day_Spending.csv")
+
+# what are the variables in the dataset?
+names(valentine)
+
+# what values does the variable Metric take on?
+count(valentine, Metric)
+```
+
+Create a graphic (or graphics) comparing the net average spent ("Net Average Spend") across years and broken out by what the money was spent on. What *information* can you extract from this graphic? s
+
+[Hint: Don't know where to start?  Think about or sketch out what you'd like your graphic to look like. Then, think about what format the data need to be in to create such a graphic (what variables will you need?  what does each row represent?)] 
+
+
+> ANSWER:  The graphic is supposed to show you how the proportion of money spent on different products over 2007-2016 changes. 
+
+```{r}
+Val <- valentine %>% filter(Metric == "Net Average Spend")
+Val2<-Val%>%gather(year,spend,4:13)
+Val3<-Val2%>% filter(!is.na(spend))
+ggplot(data= Val3, aes(x=year, y= spend,col=SpentOn,linetype=SpentOn))+geom_point()+
+  scale_y_discrete(breaks = seq(0, 100))+geom_smooth()
+
+
+# For some reason R registers 9 > 89 and thus the scale is quite confused. 
+```
+
