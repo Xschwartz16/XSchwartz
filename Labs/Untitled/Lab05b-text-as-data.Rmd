@@ -78,7 +78,7 @@ poems_lines <- poems %>%
   unnest_tokens(output = word, input = text, token = "lines")
 
 poems_words_by_six <- poems %>%
-  unnest_tokens(output = word, input = text, token = "ngrams", n=29)
+  unnest_tokens(output = word, input = text, token = "ngrams", n=929)
 
 ```
 
@@ -174,11 +174,11 @@ Map size *and color* to frequency:
 
 ```{r}
 # choose color palette from color brewer
-pal <- brewer.pal(10, "Paired")
+pal <- brewer.pal(40, "Paired")
 
 wordcloud(word_frequencies$word,word_frequencies$n
           , min.freq=20
-          , max.words=50
+          , max.words=70
           # plot the words in a random order
           , random.order=T
           # specify the range of the size of the words
@@ -194,7 +194,19 @@ wordcloud(word_frequencies$word,word_frequencies$n
 Your turn: create a word cloud with 100 words.
 
 ```{r}
-
+wordcloud(word_frequencies$word,word_frequencies$n
+          , min.freq=15
+          , max.words=100
+          # plot the words in a random order
+          , random.order=T
+          # specify the range of the size of the words
+          , scale=c(4.5,0.3)
+          # specify proportion of words with 90 degree rotation
+          , rot.per=.5
+          # colors words from least to most frequent
+          , colors = pal
+          # font family
+          , family="HersheyGothicItalian")
 ```
 
 
@@ -251,11 +263,12 @@ There are different lexicons that can be used to classify the sentiment of text.
 
 The AFINN lexicon (Nielsen 2011) assigns words a score from -5 (negative sentiment) to +5 (positive sentiment).  Check out the AFINN lexicon using the code below.  What do you think of the scores?  What is the rating for the word "slick"?  Does "slick" always have a positive connotation (can you think of a sentence where "slick" has a negative connotation)?
 
-> ANSWER:
+> ANSWER: Slick is a 2. It can definitely be used in both contexts. Slick can be speedy and smart or slimy and shady. 
 
 ```{r}
 afinn_lexicon <- get_sentiments("afinn")
-
+slick <- afinn_lexicon%>%filter(word=="slick")
+slick
 ```
 
 Use the `get_sentiments` function to create a dataframe `nrc_lexicon` that holds the NRC Word-Emotion Association lexicon (Mohammad 2010).  The NRC lexicon catergoizes words as yes/no for the following sentiment categories: positive, negative, anger, anticipation, disgust, fear, joy, sadness, surprise, and trust.  What does each row in this dataset represent? (Hint: it's *not* the same as the `afinn_lexicon` dataset.)
