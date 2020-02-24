@@ -1,9 +1,12 @@
 ---
-title: "STAT 231: Problem Set 3"
+title: 'STAT 231: Problem Set 3'
 author: "Xander Schwartz"
 date: "due by 5 PM on Monday, February 24"
-output: pdf_document
-editor_options: 
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options:
   chunk_output_type: console
 ---
 
@@ -28,7 +31,8 @@ library(tidyverse)
 
 knitr::opts_chunk$set(
   tidy=FALSE,     # display code as typed
-  size="small")   # slightly smaller font for code
+  size="small",
+  error = TRUE)   # slightly smaller font for code
 ```
 
 
@@ -47,7 +51,9 @@ library(mosaicData)
 library(lubridate)
 library(Lahman)
 
-Marriage  <- Marriage %>% mutate(appdate = mdy_hms(appdate))%>% mutate(ceremonydate = mdy_hms(ceremonydate))%>% mutate(dob = mdy_hms(dob))
+Marriage  <- Marriage %>% mutate(appdate = mdy_hms(appdate)
+                                 )%>% mutate(ceremonydate = mdy_hms(ceremonydate))
+%>% mutate(dob = mdy_hms(dob))
 
 Marriage%>%select(appdate,ceremonydate,dob)%>%glimpse()
 
@@ -73,6 +79,8 @@ as.numeric(x2)
 
 parse_number(x1)
 parse_number(x2)
+
+
 ```
 
 
@@ -93,11 +101,10 @@ a. Using the `Teams` dataset from the `Lahman` package, create a dataset called 
 You cannot use the `spread()` function here, but you should be able to create this dataset using only: `filter`, `select`, `rename`, and `full_join`. 
 
 ```{r}
+library("plyr")
 
-# Teams_Temp <- Teams %>% filter(yearID == 1988|yearID == 2008|yearID == 2018|yearID == 1998)%>%select(yearID,lgID,teamID)
-# Teams_Temp2 <- Teams %>% filter(yearID == 1988|yearID == 2008|yearID == 2018|yearID == 1998)%>%select(yearID,W)
-# Teams_Wide <- full_join(Teams_Temp,Teams_Temp2)
-Teams88 <- Teams %>% filter(yearID == 1988)%>%select(teamID,lgID,yearID,W)%>%rename(c("W"="W_1988"))
+Teams88 <- Teams %>% filter(yearID == 1988)%>%select(teamID,lgID,yearID,W)
+%>%rename(c("W"="W_1988")) 
 Teams98 <- Teams %>% filter(yearID == 1998)%>%select(teamID,W)%>%rename(c("W"="W_1998"))
 Teams08 <- Teams %>% filter(yearID == 2008)%>%select(teamID,W)%>%rename(c("W"="W_2008"))
 Teams18 <- Teams %>% filter(yearID == 2018)%>%select(teamID,W)%>%rename(c("W"="W_2018"))
@@ -107,14 +114,16 @@ Teams_Wide <- full_join(Teams_Wide,Teams08,by="teamID")
 Teams_Wide <- full_join(Teams_Wide,Teams18,by="teamID")%>%select(-yearID)
 
 
-
+glimpse(Teams_Wide)
 ```
 
 
 b. Now create a dataset called `Teams_Wide2` that is the same as `Teams_Wide` but is created using the `spread()` function. 
 
 ```{r}
-FilteredTeams <- Teams %>% filter(yearID == 1988|yearID == 2008|yearID == 2018|yearID == 1998)%>%select(yearID,lgID,teamID,W)
+FilteredTeams <- Teams %>% filter(yearID == 1988|yearID == 2008|
+                                    yearID == 2018|yearID == 1998)%>%
+  select(yearID,lgID,teamID,W)
 Teams_Wide2 <- spread(FilteredTeams, key= yearID, value = W)
 ```
 
@@ -128,20 +137,19 @@ c. Next, *working from `Teams_Wide2`*, create a dataset called `Teams_Narrow` wi
 You cannot use the `gather()` function here, but you should be able to create this dataset using only: `mutate`, `select`, `rename`, and `bind_rows`. 
 
 ```{r}
-# teamsFirst <- Teams_Wide[1:2]
-# teamsTwo <- Teams_Wide[3]
-# teamsTest <- bind_rows(teamsFirst,teamsTwo)
-# teamsTwo <- Teams_Wide[4]
-# teamsTest <- bind_rows(teamsTest,teamsTwo)
-# teamsTest <- bind_rows(teamsTest[1:3],teamsTest[4])
+
 
 teamsHold  <- Teams_Wide %>%  bind_rows(Teams_Wide[3],Teams_Wide[4],.id = "Year98")
 teamsHold2  <- teamsHold %>%  bind_rows(teamsHold[4],teamsHold[6],.id = "Year08")
-teamsHold3  <- teamsHold2 %>%  bind_rows(teamsHold2[5],teamsHold2[8],.id = "Year18")%>%select(c(1:6))
-Teams_Narrow <- teamsHold3  %>% mutate(Year = ifelse(Year18==1&Year08==1&Year98==1,1998, ifelse(Year18==1&Year08==2,2008,ifelse(Year18==1&Year08==3,2018,1988))))%>%select(c(4:7))
+teamsHold3  <- teamsHold2 %>%  bind_rows(teamsHold2[5],teamsHold2[8],.id = "Year18")%>%
+  select(c(1:6))
+
+Teams_Narrow <- teamsHold3  %>% 
+  mutate(Year = ifelse(Year18==1&Year08==1&Year98==1,1998, ifelse(Year18==1&Year08==2,2008,ifelse(Year18==1&Year08==3,2018,1988))))%>%
+  select(c(4:7))
 
 
-
+glimpse(Teams_Narrow)
 
 
 
@@ -179,27 +187,31 @@ Once your function is written, apply the function for:
 library(babynames)
 library(mdsr)
 BabynamesDist <- make_babynames_dist()
-
-nmplot <- ggplot(data = BabynamesDist %>% filter (name == nm & sex = sex),  aes (x=year)) + geom_bar(stat="identity", aes(y = count_thousands * alive_prob),fill="#b2d7e9",colour = "white") + geom_line (aes(y=count_thousands),size=2) +  ylab ("Number of poeple (Thousands)") + xlab(NULL) 
+nm <- "joseph"
+nmplot <- ggplot(data = BabynamesDist %>% filter (name == nm & sex == sex),
+                 aes (x=year)) + geom_bar(stat="identity", 
+                                          aes(y = count_thousands * alive_prob),
+                                          fill="#b2d7e9",colour = "white") + geom_line (aes(y=count_thousands),size=2) + 
+  ylab ("Number of poeple (Thousands)") + xlab(NULL)
 
 wtd.quantile <- Hmisc::wtd.quantile
-median_yob <- 
-  with(joseph, wtd.quantile(year, est_alive_today, probs = 0.5))
+median_yob <-
+  with(nm, wtd.quantile(year, est_alive_today, probs = 0.5))
 median_yob
 
 nmplot <- nmplot +
-  geom_bar(stat = "identity", colour = "white", fill = "#008fd5", 
+  geom_bar(stat = "identity", colour = "white", fill = "#008fd5",
            aes(y = ifelse(year == median_yob, est_alive_today / 1000, 0)))
  nmplot <- nmplot +
-  ggtitle("Age Distribution of American Boys Named" + nm) + 
-  geom_text(x = 1935, y = 40, label = "Number of" + nm + "nborn each year") + 
-  geom_text(x = 1915, y = 13, label = 
-    "Number of" +  nm + "\nborn each year\nestimated to be alive\non 1/1/2014", 
-    colour = "#b2d7e9") + 
-  geom_text(x = 2003, y = 40, 
-    label = "The median\nliving "+ nm + "\nis"  + median_yob + "years old", 
-            colour = "darkgray") + 
-  geom_curve(x = 1995, xend = 1974, y = 40, yend = 24, 
+  ggtitle("Age Distribution of American Boys Named" + nm) +
+  geom_text(x = 1935, y = 40, label = "Number of" + nm + "nborn each year") +
+  geom_text(x = 1915, y = 13, label =
+    "Number of" +  nm + "\nborn each year\nestimated to be alive\non 1/1/2014",
+    colour = "#b2d7e9") +
+  geom_text(x = 2003, y = 40,
+    label = "The median\nliving "+ nm + "\nis"  + median_yob + "years old",
+            colour = "darkgray") +
+  geom_curve(x = 1995, xend = 1974, y = 40, yend = 24,
     arrow = arrow(length = unit(0.3,"cm")), curvature = 0.5) + ylim(0, 42)
 
 
@@ -208,6 +220,7 @@ namePlot <- function(nm, sex)
   nmplot  %+% filter(BabynamesDist, name == nm, sex == sex)
 
 }
+namePlot("Joseph", "M")
 
 namePlot("Donald", "M")
 
