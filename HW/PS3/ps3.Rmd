@@ -28,11 +28,13 @@ Steps to proceed:
 
 ```{r, setup, include=FALSE}
 library(tidyverse)
+library(tidytext)
+library(wordcloud)
 
 knitr::opts_chunk$set(
   tidy=FALSE,     # display code as typed
   size="small",
-  error = TRUE)   # slightly smaller font for code
+  error = FALSE)   # slightly smaller font for code
 ```
 
 
@@ -51,9 +53,10 @@ library(mosaicData)
 library(lubridate)
 library(Lahman)
 
-Marriage  <- Marriage %>% mutate(appdate = mdy_hms(appdate)
-                                 )%>% mutate(ceremonydate = mdy_hms(ceremonydate))
-%>% mutate(dob = mdy_hms(dob))
+Marriage  <- Marriage %>% 
+  mutate(appdate = mdy_hms(appdate))%>%
+  mutate(ceremonydate = mdy_hms(ceremonydate))%>%
+  mutate(dob = mdy_hms(dob))
 
 Marriage%>%select(appdate,ceremonydate,dob)%>%glimpse()
 
@@ -67,7 +70,7 @@ Consider the values returned by the `as.numeric()` and `readr::parse_number()` f
 
 > ANSWER: As numeric is only able to read 1900.45 correctly, as the other numbers include a non-numeric symbol. As numeric registers x2 as some sort of whole number, as the factor version screws it up. Parse number is far more succesfsul  of the x1, but for x2 it does not work, as x2 as already been set to a factor. 
 
-```{r}
+```{r,error = TRUE}
 x1 <- c("1900.45", "$1900.45", "1,900.45", "nearly $2000")
 x2 <- as.factor(x1)
 
@@ -101,13 +104,22 @@ a. Using the `Teams` dataset from the `Lahman` package, create a dataset called 
 You cannot use the `spread()` function here, but you should be able to create this dataset using only: `filter`, `select`, `rename`, and `full_join`. 
 
 ```{r}
-library("plyr")
+# library(plyr)
+library(dplyr)
 
-Teams88 <- Teams %>% filter(yearID == 1988)%>%select(teamID,lgID,yearID,W)
-%>%rename(c("W"="W_1988")) 
-Teams98 <- Teams %>% filter(yearID == 1998)%>%select(teamID,W)%>%rename(c("W"="W_1998"))
-Teams08 <- Teams %>% filter(yearID == 2008)%>%select(teamID,W)%>%rename(c("W"="W_2008"))
-Teams18 <- Teams %>% filter(yearID == 2018)%>%select(teamID,W)%>%rename(c("W"="W_2018"))
+Teams88 <- Teams %>% 
+  filter(yearID == 1988)%>%
+  select(teamID,lgID,yearID,W)%>%
+  dplyr::rename(W_1988=W) 
+Teams98 <- Teams %>% filter(yearID == 1998)%>%
+  select(teamID,W)%>%
+  dplyr::rename(W_1998=W)
+Teams08 <- Teams %>% filter(yearID == 2008)%>%
+  select(teamID,W)%>%
+  dplyr::rename(W_2008=W)
+Teams18 <- Teams %>% filter(yearID == 2018)%>%
+  select(teamID,W)%>%
+  dplyr::rename(W_2018=W)
 
 Teams_Wide <- full_join(Teams88,Teams98,by="teamID")
 Teams_Wide <- full_join(Teams_Wide,Teams08,by="teamID")
@@ -183,7 +195,7 @@ Once your function is written, apply the function for:
 - `names_plot(nm = "Pete", sex = "M")`
 - `names_plot(nm = "Amy", sex = "F")`
 
-```{r}
+```{r, error=TRUE}
 library(babynames)
 library(mdsr)
 BabynamesDist <- make_babynames_dist()
@@ -191,7 +203,7 @@ nm <- "joseph"
 nmplot <- ggplot(data = BabynamesDist %>% filter (name == nm & sex == sex),
                  aes (x=year)) + geom_bar(stat="identity", 
                                           aes(y = count_thousands * alive_prob),
-                                          fill="#b2d7e9",colour = "white") + geom_line (aes(y=count_thousands),size=2) + 
+                                          fill="#b2d7e9",colour = "white") + geom_line() (aes(y=count_thousands),size=2) + 
   ylab ("Number of poeple (Thousands)") + xlab(NULL)
 
 wtd.quantile <- Hmisc::wtd.quantile
@@ -222,7 +234,7 @@ namePlot <- function(nm, sex)
 }
 namePlot("Joseph", "M")
 
-namePlot("Donald", "M")
+# namePlot("Donald", "M")
 
 
 ```
@@ -378,6 +390,10 @@ And
 > ANSWER: There is a pretty equal split on the Iphone  (176 joy 170 angry) but far more angry on the Android.  Therre are 794 positive  and  662 negaative on the Android and 449 positive and 266 negative on the Iphone. 
 
 ```{r}
+
+nrc_lexicon <- get_sentiments("nrc")
+
+
 ASent <- tweetsA%>%
   unnest_tokens(output = word, input = text)
 
