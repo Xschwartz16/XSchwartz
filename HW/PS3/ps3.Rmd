@@ -196,45 +196,45 @@ Once your function is written, apply the function for:
 - `names_plot(nm = "Amy", sex = "F")`
 
 ```{r, error=TRUE}
-library(babynames)
-library(mdsr)
-BabynamesDist <- make_babynames_dist()
-nm <- "joseph"
-nmplot <- ggplot(data = BabynamesDist %>% filter (name == nm & sex == sex),
-                 aes (x=year)) + geom_bar(stat="identity", 
-                                          aes(y = count_thousands * alive_prob),
-                                          fill="#b2d7e9",colour = "white") + geom_line() (aes(y=count_thousands),size=2) + 
-  ylab ("Number of poeple (Thousands)") + xlab(NULL)
-
-wtd.quantile <- Hmisc::wtd.quantile
-median_yob <-
-  with(nm, wtd.quantile(year, est_alive_today, probs = 0.5))
-median_yob
-
-nmplot <- nmplot +
-  geom_bar(stat = "identity", colour = "white", fill = "#008fd5",
-           aes(y = ifelse(year == median_yob, est_alive_today / 1000, 0)))
- nmplot <- nmplot +
-  ggtitle("Age Distribution of American Boys Named" + nm) +
-  geom_text(x = 1935, y = 40, label = "Number of" + nm + "nborn each year") +
-  geom_text(x = 1915, y = 13, label =
-    "Number of" +  nm + "\nborn each year\nestimated to be alive\non 1/1/2014",
-    colour = "#b2d7e9") +
-  geom_text(x = 2003, y = 40,
-    label = "The median\nliving "+ nm + "\nis"  + median_yob + "years old",
-            colour = "darkgray") +
-  geom_curve(x = 1995, xend = 1974, y = 40, yend = 24,
-    arrow = arrow(length = unit(0.3,"cm")), curvature = 0.5) + ylim(0, 42)
-
-
-namePlot <- function(nm, sex)
-{
-  nmplot  %+% filter(BabynamesDist, name == nm, sex == sex)
-
-}
-namePlot("Joseph", "M")
-
-# namePlot("Donald", "M")
+# library(babynames)
+# library(mdsr)
+# BabynamesDist <- make_babynames_dist()
+# nm <- "joseph"
+# nmplot <- ggplot(data = BabynamesDist %>% filter (name == nm & sex == sex),
+#                  aes (x=year)) + geom_bar(stat="identity", 
+#                                           aes(y = count_thousands * alive_prob),
+#                                           fill="#b2d7e9",colour = "white") + geom_line() (aes(y=count_thousands),size=2) + 
+#   ylab ("Number of poeple (Thousands)") + xlab(NULL)
+# 
+# wtd.quantile <- Hmisc::wtd.quantile
+# median_yob <-
+#   with(nm, wtd.quantile(year, est_alive_today, probs = 0.5))
+# median_yob
+# 
+# nmplot <- nmplot +
+#   geom_bar(stat = "identity", colour = "white", fill = "#008fd5",
+#            aes(y = ifelse(year == median_yob, est_alive_today / 1000, 0)))
+#  nmplot <- nmplot +
+#   ggtitle("Age Distribution of American Boys Named" + nm) +
+#   geom_text(x = 1935, y = 40, label = "Number of" + nm + "nborn each year") +
+#   geom_text(x = 1915, y = 13, label =
+#     "Number of" +  nm + "\nborn each year\nestimated to be alive\non 1/1/2014",
+#     colour = "#b2d7e9") +
+#   geom_text(x = 2003, y = 40,
+#     label = "The median\nliving "+ nm + "\nis"  + median_yob + "years old",
+#             colour = "darkgray") +
+#   geom_curve(x = 1995, xend = 1974, y = 40, yend = 24,
+#     arrow = arrow(length = unit(0.3,"cm")), curvature = 0.5) + ylim(0, 42)
+# 
+# 
+# namePlot <- function(nm, sex)
+# {
+#   nmplot  %+% filter(BabynamesDist, name == nm, sex == sex)
+# 
+# }
+# namePlot("Joseph", "M")
+# 
+# # namePlot("Donald", "M")
 
 
 ```
@@ -251,7 +251,10 @@ Test your function on the following inputs and be sure they return the correct p
 - our class (`count_names(our_class)` with `our_class` defined below)
 
 
-```{r, error = TRUE}
+```{r}
+library(babynames)
+
+babynames <- babynames::babynames
 
 our_class <- str_to_title(c("aaron", "ainsley", "aleksandar", "beth"
            , "bobby", "brandon", "breanna", "chris"
@@ -259,6 +262,32 @@ our_class <- str_to_title(c("aaron", "ainsley", "aleksandar", "beth"
            , "isabelle", "jacob", "janet", "jordan"
            , "konstantin", "maggie", "matt", "michael"
            , "natacha", "stephanie", "umaimah", "xander"))
+
+count_name <- function(nm){
+  dat <- babynames %>%
+    filter(name %in% nm) %>%
+    group_by(name, year) %>%
+    summarize(total = sum(n))
+  
+  if (nrow(dat)==0|nrow(dat)>20){
+    stop("There are no matches")
+  }
+  else{
+      plot <- ggplot(dat, aes(x = year, y = total
+                            , color = name)) +
+      geom_line() + 
+      labs(x = "Year", y = "Total number of births"
+           , title = paste("Babies named", paste(nm, collapse = " or "))
+           , color = "")
+    return(plot)
+  }
+}
+
+
+
+count_name(our_class)
+
+
 
 ```
 
