@@ -1,0 +1,186 @@
+---
+title: "Lab 7 - Say cheers to web scraping!"
+subtitle: "Web scraping"
+date: "`r Sys.Date()`"
+always_allow_html: yes
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(eval = TRUE)
+# change displayed number of digits in R Markdown document
+options(digits = 2)
+```
+
+This lab is a modified version of a web scraping lab developed by Mina Cetinkaya-Rundel.
+
+In 2017, the U.S. beer industry shipped (sold) 207.4 million barrels of beer, equivalent to more than 2.9 billion cases of 24-12 ounce servings. In addition, the industry shipped approximately 2 million barrels of cider, equivalent to more than 28.3 million cases. Additionally, the U.S. beer industry sells more than $111.1 billion in beer and malt-based beverages to U.S. consumers each year. (Source: [The U.S. Beer Industry]( https://www.nbwa.org/resources/industry-fast-facts))
+
+Do you know how many breweries are around you? And how much beer they brew? In this lab we scrape and analyze data on US breweries.
+
+We will start with getting data on breweries in Massachusetts. Then, you will use a similar approach to get data on breweries in a different state of your choosing.
+
+
+# Packages
+
+In this lab we will work with the `tidyverse`, `rvest`, and `robotstxt` packages. If working on the Amherst server, these packages should already be installed.  If working on your own machine, you may need to install them before loading (using the `install.packages()` command or by going to Tools > Install Packages) .
+
+```{r message=FALSE}
+library(tidyverse) 
+library(rvest)
+library(robotstxt)
+```
+
+# The data
+
+We will scrape brewery information from https://www.ratebeer.com/breweries/. RateBeer.com is an in-depth, consumer-driven source of beer information. We will use the state-level brewery lists on this site to first obtain information on all breweries in a given state. Then, we will dive deeper and obtain additional information on each of the breweries in that state, one-by-one, by automating our code to do so.
+
+Before getting started, let's check that a bot has permissions to access pages on this domain.
+
+```{r, warning=FALSE}
+paths_allowed("https://www.ratebeer.com/")
+```
+
+## Massachusetts
+
+The goal of this exercise is scrape the data from:  https://www.ratebeer.com/breweries/massachusetts/21/213/
+
+and save it as a data frame that looks like the following:
+
+```{r, echo=FALSE, message=FALSE}
+head(read_csv("http://kcorreia.people.amherst.edu/F1920/ma_breweries.csv"))
+```
+
+Note that you might have a different number of rows and some of the data may have also changed at the date when you scrape it. The above data table was generated based on data scraped on August 22, 2019.
+
+
+1. Based on the information on the Massachuetts breweries page, how many total (active + closed) breweries are there in MA?
+
+> RESPONSE: 202
+
+
+2. The code for the following should go in a file `scrape_breweries.R`.  The reason for scraping in a .R file instead of .Rmd file, is that you don't want to re-scrape the data every time you knit your Markdown file.  Some websites have limits on the number of hits you can make.  It's usually fine to make multiple hits as you're working and testing your scraping code.  But, once you have the data you need from a website, you don't want to re-execute the scraping part of the code everytime you knit a file or you could get blocked from scraping that site.
+
+- Let's start by extracting the tables using the `html_nodes` function from the `rvest` package (You should copy this code into your .R file, and then delete this code chunk):  
+
+How many tables are there?  Can you tell what each of the tables are coming from on the webpage?
+
+> RESPONSE: 4 Tables. Not entirely sure - type, beer count, my count, and est.?
+
+- With the format it's in now, it's hard to tell what each of these tables correspond to on the webpage.  Use the `html_table` function to get the tables in a more readable format.  Identify what each of the tables identified here correspond to on the webpage.
+
+> RESPONSE: 
+
+```{r eval=FALSE}
+# e.g. for table 1
+table1 <- html_table(ma_tables[[1]])
+
+# then repeat for the other tables
+table2 <- html_table(ma_page[[1]])
+
+
+```
+
+
+- In your .R file, create a data frame that contains both the active and closed breweries in Massachusetts, and create a variable to identify whether the brewery is active or closed.  Save this dataframe as `ma_breweries.csv` using the `write_csv` function, e.g. `write_csv(ma_breweries, path = "~/ma_breweries.csv")` (update the path so that your data is stored in an appropriate folder).
+
+
+3. Load `ma_breweries.csv` in your Rmd using the `read_csv` function.
+
+```{r}
+ma_breweries <- read_csv("http://kcorreia.people.amherst.edu/F1920/ma_breweries.csv")
+```
+
+
+4. Among breweries that are still active, which brewery has been around the longest? In what year was it established?  
+
+> RESPONSE: Boston beer company. 1984
+
+```{r}
+
+```
+
+
+5. Which city in MA has the most breweries? How many breweries are in Amherst, MA? What are they?  (In order to answer these questions, we needed to extract the city from the `Name` variable.  Code to do so is given below.  Can you tell what each step is doing?)
+
+> RESPONSE: 
+
+
+```{r}
+uppers <- data.frame(position = unlist(gregexpr("[A-Z]", ma_breweries$Name))) %>%
+  mutate(next_position = lead(position)
+         , keep = ifelse(next_position < position | is.na(next_position)==TRUE
+                         , yes = 1, no = 0)) %>%
+  filter(keep == 1)
+
+ma_breweries <- ma_breweries %>%
+  mutate(name2 = str_sub(Name, 1, uppers$position-1)
+         , city = str_sub(Name, uppers$position)) %>%
+  select(Name, name2, city, Type, `Beer Count`, Est., active, Closed)
+
+# ggplot(ma_breweries,aes(x=city,y=active)) + geom_point() +  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+6. Recreate the following visualization, and interpret it.
+
+> RESPONSE: Microbreweries are on the rise, many others are flat. No one is opening a commerical brewery anymore for example. 
+
+```{r echo=FALSE, fig.fullwidth = TRUE}
+ma_breweries %>%
+  count(Est., Type) %>%
+  ggplot(aes(x = Est., y = n, color = Type)) +
+    geom_point() +
+    geom_line() +
+    labs(x = "Year", y = "Number of brewery openings",
+         title = "Number of breweries openening each year",
+         subtitle = "By type")
+```
+
+## Choose your own state
+
+Do the following in your `scrape_breweries.R` file.
+
+Repeat what you did above (potentially with some modifications) to create a similar data frame (with the same columns) for a different state of your choosing. Save the result in a csv file with the name of the state you chose, e.g. `xx_breweries.csv`.
+
+Load the new data in this R Markdown file.
+
+7. Which city in that state has the highest number of active breweries?
+
+> RESPONSE: 
+
+```{r}
+
+```
+
+
+8. Which city has the youngest (active) breweries, on average?
+
+> RESPONSE: 
+
+```{r}
+
+```
+
+
+9. How many breweries have closed?  Do the breweries that have closed tend to be of a particular type?  Are there any years that saw a particularly high number of breweries closing?
+
+> RESPONSE:
+
+```{r}
+
+```
+
+
+10. Create a visualization of your choosing that has something to do with `beer_count`.  Interpret the visualization in 3-4 sentences.
+
+> RESPONSE:
+
+```{r}
+
+```
+
