@@ -1,0 +1,119 @@
+---
+title: "STAT 231: Problem Set 4"
+author: "Your Name Here"
+date: "due by 5 PM on Friday, March 13"
+output: pdf_document
+---
+
+This homework assignment is designed to help you futher ingest, practice, and expand upon the material covered in class over the past week(s).  You are encouraged to work with other students, but all code and text must be written by you, and you must indicate below who you discussed the assignment with (if anyone).  
+
+Steps to proceed:
+
+\begin{enumerate}
+\item In RStudio, go to File > Open Project, navigate to the folder with the course-content repo, select the course-content project (course-content.Rproj), and click "Open" 
+\item Pull the course-content repo (e.g. using the blue-ish down arrow in the Git tab in upper right window)
+\item Copy ps4.Rmd from the course repo to your repo (see page 6 of the GitHub Classroom Guide for Stat231 if needed)
+\item Close out of the course repo project in RStudio
+\item Open up your repo project in RStudio
+\item In the ps4.Rmd file in YOUR repo, replace "YOUR NAME HERE" with your name
+\item Add in your responses, committing and pushing to YOUR repo in appropriate places along the way
+\item Run "Knit PDF" 
+\item Upload the pdf to Gradescope
+\end{enumerate}
+
+```{r, setup, include=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+## If you discussed this assignment with any of your peers, please list who here:
+
+> ANSWER:
+
+
+\newpage
+# Shiny App from Lab06b
+
+1. Finish your app from Lab06b and add your app code to the R code chunk below.
+
+Recall that you could have either (1) updated the app to still explore the `hate_crimes` dataset, but with different app functionality (e.g. different widgets, variables, layout, theme...); OR (2) used the lab app as a template to create a Shiny app for a different dataset, choosing from these other datasets that are in the `fivethirtyeight` package:
+
+* mad_men (tv performers and their post-show career)
+* ncaa_w_bball_tourney (women's NCAA div 1 basketball tournament, 1982-2018)
+* nfl_suspensions (NFL suspensions, 1946-2014)
+* candy_rankings (candy characteristics and popularity)
+
+If using the `hate_crimes` dataset, be sure to update:
+
+* at least 2 different widgets; and
+* the layout (e.g. not in tabs, or a different page layout) or the theme
+     + check out:  https://rstudio.github.io/shinythemes/
+     
+Like a challenge?  incorporate one of the click, hover or brush features (check out: https://shiny.rstudio.com/articles/plot-interaction.html).
+
+
+```{r eval=FALSE}
+## keep eval = FALSE in this code chunk option so your app doesn't 
+## try to run when knitting the document
+
+## add your app code here (including any packages and datasets loaded,
+## the ui call, the server call, and the shinyApp call)
+```
+
+      
+\newpage
+2. Publish your app.  Then, go to the Moodle forum "Shiny Apps" and click "add a new topic".  Add a relevant title to your topic in the "Subject" box, and the URL to your published app in the "Message" box.
+
+Write a brief paragraph either on what updates you made to the Shiny app (if using the `hate_crimes` dataset) or what *information* your Shiny app is *conveying* (if using a different dataset).
+
+> ANSWER: 
+
+    
+
+
+\newpage
+# Dickinson Poems
+
+We'll work on an Emily Dickinson Shiny app later.  For now, consider these questions.
+
+1. Consider the *number of words* in each of the Emily Dickinson poems (as, imperfectly, scraped from the web).  Describe the shape, center, and spread of the distribution of the number of words per poem.  You should provide one measure of center and spread, and a single graphical display.  
+
+> ANSWER: 
+
+```{r}
+poems <- read.csv("http://kcorreia.people.amherst.edu/F1920/DickinsonPoems.csv"
+                  , stringsAsFactors = FALSE) %>%
+  filter(text != "Still Missing") 
+
+
+poems <- poems%>%str_remove_all(text, "<97>")
+poems <- poems%>%mutate(wordCount = sapply(strsplit(text, " "), length))
+
+
+
+```
+
+2. Create an appropriate figure to effectively visualize how/whether the length of her poems changed over time, based on R.W. Franklin's judgement of chronology.  (The variable `est_chron` represents the, in Wikipedia's words, "Number assigned by R. W. Franklin in his variorum edition of 1998. Numbering represents Franklin's judgment of chronology".)  In a few sentences, discuss what information the figure conveys.
+
+> ANSWER:  
+
+```{r}
+
+        
+```
+
+
+\newpage
+## Emily Dickinson Museum Visit
+
+3a. List two things you learned during our tour at the Emily Dickinson Museum. 
+
+> ANSWER: The two main takeaways I had were the effect of money on her lifestyle. Dickinson was fortunate that she grew up in a household in which she was able to spend her days in her room writing poetry while having servants to run the household. It's a good reminder of the lost potential of everyone who was not so fortunate. I was also struck by the emphasis placed on a social lifestyle during Dickinson's era. There seemed to be many examples of Dickinson's family making it a priority to be part of the Amherst social scene. 
+
+3b. Did the Emily Dickinson Museum tour help you better understand the context behind the text analyses conducted so far on her poetry?  Did the tour generate any questions you could address through further text analysis of her poetry? Please explain.
+
+> ANSWER: I think that the tour helped to gain a better perspective on Dickinson's work, particularlyin the conetext of her time period. I'd be curious to see if there is any way to create a text analyses that represents her interactions with nature. 
