@@ -199,6 +199,15 @@ poems <- read.csv("http://kcorreia.people.amherst.edu/F1920/DickinsonPoems.csv"
 #poems <- poems%>%str_remove_all(text, "<97>")
 poems <- poems%>%mutate(wordCount = sapply(strsplit(text, " "), length))
 
+poem_words <- poems %>%
+  group_by(name) %>%
+  tidytext::unnest_tokens(output = word, input = text, token = "words")
+
+poem_wordcount <- poem_words %>%
+  group_by(name) %>%
+  count()
+
+head(poem_wordcount)
 
 summary(poems$wordCount)
 
