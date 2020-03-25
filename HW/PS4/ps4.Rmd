@@ -1,6 +1,6 @@
 ---
 title: "STAT 231: Problem Set 4"
-author: "Your Name Here"
+author: "Xander Schwartz"
 date: "due by 5 PM on Friday, March 13"
 output: pdf_document
 ---
@@ -25,6 +25,9 @@ Steps to proceed:
 library(tidyverse)
 library(fivethirtyeight)
 library(shinythemes)
+library(ngram)
+library(reshape2)
+library(psych)
 
 knitr::opts_chunk$set(
   tidy=FALSE,     # display code as typed
@@ -176,8 +179,7 @@ shinyApp(ui = ui, server = server)
 
 Write a brief paragraph either on what updates you made to the Shiny app (if using the `hate_crimes` dataset) or what *information* your Shiny app is *conveying* (if using a different dataset).
 
-> ANSWER: 
-
+> ANSWER: I continued to use the hate crimes data set, but changed a few things. I changed the theme and the type of tabs/pills. I also made one of the options to view everything Donald Trump's vote percentage in the 2016 election. 
     
 
 
@@ -188,7 +190,7 @@ We'll work on an Emily Dickinson Shiny app later.  For now, consider these quest
 
 1. Consider the *number of words* in each of the Emily Dickinson poems (as, imperfectly, scraped from the web).  Describe the shape, center, and spread of the distribution of the number of words per poem.  You should provide one measure of center and spread, and a single graphical display.  
 
-> ANSWER: 
+> ANSWER: The data is somewhat skewed right with a few very long poems, but most poems seem to have between 20-50 words, with a mean of about 50, a median of 42, and a standard deviation of about 33. 
 
 ```{r}
 poems <- read.csv("http://kcorreia.people.amherst.edu/F1920/DickinsonPoems.csv"
@@ -196,13 +198,29 @@ poems <- read.csv("http://kcorreia.people.amherst.edu/F1920/DickinsonPoems.csv"
   filter(text != "Still Missing") 
 
 
+poem_words <- poems %>%
+  group_by(name) %>%
+  tidytext::unnest_tokens(output = word, input = text, token = "words")
+
+poem_wordcount <- poem_words %>%
+  group_by(name) %>%
+  count()
+
+head(poem_wordcount)
+
 #poems <- poems%>%str_remove_all(text, "<97>")
-poems <- poems%>%mutate(wordCount = sapply(strsplit(text, " "), length))
+#poems <- poems%>%mutate(wordCount = sapply(strsplit(text, " "), length))
+#poems <- poems%>%mutate(wordCount = wordcount(poems$text, sep = " ", count.function = sum))
 
 
-summary(poems$wordCount)
+allPoems <- full_join(poems,poem_wordcount)
 
-plot <- ggplot(poems, aes(x=wordCount)) + geom_histogram() + ylab("Occurences") + xlab("Word Count")
+
+ "\n"
+summary(allPoems$n)
+describe(allPoems$n)
+
+plot <- ggplot(allPoems, aes(x=n)) + geom_histogram() + ylab("Occurences") + xlab("Word Count")
 
 plot
 
@@ -210,11 +228,11 @@ plot
 
 2. Create an appropriate figure to effectively visualize how/whether the length of her poems changed over time, based on R.W. Franklin's judgement of chronology.  (The variable `est_chron` represents the, in Wikipedia's words, "Number assigned by R. W. Franklin in his variorum edition of 1998. Numbering represents Franklin's judgment of chronology".)  In a few sentences, discuss what information the figure conveys.
 
-> ANSWER:  
+> ANSWER:  There does not seem to be a major change in average word count over time in Dickinson's poems. There is a slight trend towards shorter poems later on, going  from about 55 words to closer to 40 words by the end, but not a large shift. 
 
 ```{r}
 
-        
+ggplot(allPoems, aes(x = est_chron, y=n))+geom_point()+geom_smooth()        
 ```
 
 
