@@ -84,7 +84,8 @@ names(x_choices) <- x_choice_names
 # for radio button, can be separate (have choiceValues and choiceNames options, 
 # rather than just choices)
 y_choice_values = names(hate_crimes2)[11:13]
-y_choice_names <- c("Share of 2016 US presidential votes who voted for Donald Trump","Hate crimes per 100,000 pop, SPLC, Nov 9-18,2016"
+y_choice_names <- c("Share of 2016 US presidential votes who voted for Donald Trump",
+                    "Hate crimes per 100,000 pop, SPLC, Nov 9-18,2016"
                     , "Average annual hate crimes per 100,000 population, FBI, 2010-2015")
 
 # for checkboxGroupInput (only have "choices" option, but these labels are fine)
@@ -210,7 +211,8 @@ head(poem_wordcount)
 
 #poems <- poems%>%str_remove_all(text, "<97>")
 #poems <- poems%>%mutate(wordCount = sapply(strsplit(text, " "), length))
-#poems <- poems%>%mutate(wordCount = wordcount(poems$text, sep = " ", count.function = sum))
+#poems <- poems%>%mutate(wordCount = wordcount(poems$text, sep = " ", 
+#count.function = sum))
 
 
 allPoems <- full_join(poems,poem_wordcount)
@@ -220,7 +222,8 @@ allPoems <- full_join(poems,poem_wordcount)
 summary(allPoems$n)
 describe(allPoems$n)
 
-plot <- ggplot(allPoems, aes(x=n)) + geom_histogram() + ylab("Occurences") + xlab("Word Count")
+plot <- ggplot(allPoems, aes(x=n)) + geom_histogram() + ylab("Occurences") + 
+  xlab("Word Count")
 
 plot
 
@@ -245,4 +248,4 @@ ggplot(allPoems, aes(x = est_chron, y=n))+geom_point()+geom_smooth()
 
 3b. Did the Emily Dickinson Museum tour help you better understand the context behind the text analyses conducted so far on her poetry?  Did the tour generate any questions you could address through further text analysis of her poetry? Please explain.
 
-> ANSWER: I think that the tour helped to gain a better perspective on Dickinson's work, particularlyin the conetext of her time period. I'd be curious to see if there is any way to create a text analyses that represents her interactions with nature. 
+> ANSWER: I think that the tour helped me to gain a better perspective on Dickinson's work, particularly in the conetext of her time period. I'd be curious to see if there is any way to create a text analyses that represents her interactions with nature. 
