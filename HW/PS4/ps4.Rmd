@@ -217,6 +217,15 @@ head(poem_wordcount)
 
 allPoems <- full_join(poems,poem_wordcount)
 
+poem_words <- poems %>%
+  group_by(name) %>%
+  tidytext::unnest_tokens(output = word, input = text, token = "words")
+
+poem_wordcount <- poem_words %>%
+  group_by(name) %>%
+  count()
+
+head(poem_wordcount)
 
  "\n"
 summary(allPoems$n)
