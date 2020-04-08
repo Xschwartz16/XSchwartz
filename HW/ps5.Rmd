@@ -104,9 +104,10 @@ write_csv(marathon, path = "marathon.csv")
 
 Create a visualization to show how the winning time has changed over the years, separated out (in some way) by gender and type.  Interpret the plot.
 
-> ANSWER: It seems like the wheelchair times have showwn a downward slope meaning that the times have clearly decreased over time whereas the running times don't seem to have as obvious a trend although many of the fastest times ever have occured in recent years. Perhaps this difference is due to advancements in wheelchair technology. 
+> ANSWER: It seems like the wheelchair times and women running have showwn a downward slope meaning that the times have clearly decreased over time whereas the male running times don't seem to have as obvious a trend although many of the fastest times ever have occured in recent years. Perhaps this difference is due to advancements in wheelchair technology and that women have had increased oppertunity in recent years. 
 
 ```{r}
+write_csv(marathon, path = "marathon.csv")
 
 
 marathon2 <- marathon %>%
@@ -133,13 +134,13 @@ marathon2 <- marathon %>%
 ```
 
 ```{r}
-mr <- ggplot(marathon, aes(x = marathon$Year, y = marathon$`Time Male Winner Running`)) + geom_point() + geom_smooth()
+mr <- ggplot(marathon2, aes(x = marathon2$Year, y = marathon2$time_minutes_maleR)) + geom_point() + geom_smooth()+labs(x="Year", y= "Time (minutes)")
 
-wr <- ggplot(marathon, aes(x = marathon$Year, y = marathon$`Time Female Winner Running`)) + geom_point() + geom_smooth()
+wr <- ggplot(marathon2, aes(x = marathon2$Year, y = marathon2$time_minutes_femaleR)) + geom_point() + geom_smooth()+labs(x="Year", y= "Time (minutes)")
 
-mw <- ggplot(marathon, aes(x = marathon$Year, y = marathon$`Time Male Winner Wheelchair`)) + geom_point() + geom_smooth()
+mw <- ggplot(marathon2, aes(x = marathon2$Year, y = marathon2$time_minutes_maleW)) + geom_point() + geom_smooth()+labs(x="Year", y= "Time (minutes)")
 
-ww <- ggplot(marathon, aes(x = marathon$Year, y = marathon$`Time Female Winner Wheelchair`)) + geom_point() + geom_smooth()
+ww <- ggplot(marathon2, aes(x = marathon2$Year, y = marathon2$time_minutes_femaleW)) + geom_point() + geom_smooth()+labs(x="Year", y= "Time (minutes)")
 
 mr
 wr
