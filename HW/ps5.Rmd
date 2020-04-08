@@ -74,7 +74,7 @@ paths_allowed("https://en.wikipedia.org/wiki/List_of_winners_of_the_Boston_Marat
 2. Go to https://en.wikipedia.org/wiki/List_of_winners_of_the_Boston_Marathon and scrape the tables for the Men's Open, Women's Open, Men's Wheelchair, and Women's Wheelchair winners of the Boston Marathon.  Combine the four tables into one dataframe with two additional variables: gender ("Men", "Women") and type ("Open", "Wheelchair").  Save your code in an R script called `marathon.R`, and write the data frame out to a csv file called `marathon.csv` using the `write_csv` function. 
 
 
-```{r eval=FALSE}
+```{r}
 ## Add your code that is in marathon.R to this code chunk.  KEEP the "eval=FALSE" option in this code chunk option, as you do NOT want to evaluate it (which would re-scrape the website everytime you knit this file).  (We do want the grader to be able to see the code, though, as you'll only submit this one knit PDF to Gradescope.)
 
 
@@ -108,7 +108,6 @@ Create a visualization to show how the winning time has changed over the years, 
 
 ```{r}
 write_csv(marathon, path = "marathon.csv")
-
 
 marathon2 <- marathon %>%
   mutate(time_temp1 = as.character(`Time Male Winner Running`)) %>%
@@ -199,7 +198,7 @@ cat(quote_for_the_day)
 
 Go to BrainyQuote.com and search a different topic (or search an Author) that interests you.  Scrape the webpage returned from your search following the same code given above.   Save your code in an R script called `quotes.R`, and write the data frame out to a csv file called `quotes.csv` using the `write_csv` function. 
 
-```{r, eval = FALSE}
+```{r}
 ## Add your code that is in quotes.R to this code chunk.  KEEP the "eval=FALSE" option in this code chunk option, as you do NOT want to evaluate it (which would re-scrape the website everytime you knit this file).  (We do want the grader to be able to see the code, though, as you'll only submit this one knit PDF to Gradescope.)
 quotes_html <- read_html("https://www.brainyquote.com/topics/pet-quotes")
 
