@@ -1,0 +1,234 @@
+---
+title: 'STAT 231: Problem Set 5'
+author: "YOUR NAME HERE"
+date: "due by 5 PM on Friday, April 10"
+output:
+  html_document:
+    df_print: paged
+---
+
+This homework assignment is designed to help you futher ingest, practice, and expand upon the material covered in class over the past week(s).  You are encouraged to work with other students, but all code and text must be written by you, and you must indicate below who you discussed the assignment with (if anyone).  
+
+Steps to proceed:
+
+\begin{enumerate}
+\item In RStudio, go to File > Open Project, navigate to the folder with the course-content repo, select the course-content project (course-content.Rproj), and click "Open" 
+\item Pull the course-content repo (e.g. using the blue-ish down arrow in the Git tab in upper right window)
+\item Copy ps5.Rmd from the course repo to your repo (see page 6 of the GitHub Classroom Guide for Stat231 if needed)
+\item Close out of the course repo project in RStudio
+\item Open up your repo project in RStudio
+\item In the ps5.Rmd file in YOUR repo, replace "YOUR NAME HERE" with your name
+\item Add in your responses, committing and pushing to YOUR repo in appropriate places along the way
+\item Run "Knit PDF" 
+\item Upload the pdf to Gradescope
+\end{enumerate}
+
+```{r, setup, include=FALSE}
+library(tidyverse)
+library(robotstxt)
+library(rvest)
+library(knitr)
+library(mdsr)
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+
+# to wrap the text when printing quotes for Brainy Quotes exercise
+hook_output = knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+```
+
+
+\newpage 
+# If you discussed this assignment with any of your peers, please list who here:
+
+> ANSWER:
+
+\newpage
+# PART 1: Web scraping
+
+*Please use the code in "Lab07-web-scraping.Rmd" and in "scrape_breweries.R" as a reference for working through these web scraping problems.* 
+
+## Boston Marathon Winners
+
+1. Confirm (using an R command) that the following Wikipdeia page allows automated scraping:
+https://en.wikipedia.org/wiki/List_of_winners_of_the_Boston_Marathon
+
+
+```{r}
+
+```
+
+\newpage
+2. Go to https://en.wikipedia.org/wiki/List_of_winners_of_the_Boston_Marathon and scrape the tables for the Men's Open, Women's Open, Men's Wheelchair, and Women's Wheelchair winners of the Boston Marathon.  Combine the four tables into one dataframe with two additional variables: gender ("Men", "Women") and type ("Open", "Wheelchair").  Save your code in an R script called `marathon.R`, and write the data frame out to a csv file called `marathon.csv` using the `write_csv` function. 
+
+
+```{r eval=FALSE}
+## Add your code that is in marathon.R to this code chunk.  KEEP the "eval=FALSE" option in this code chunk option, as you do NOT want to evaluate it (which would re-scrape the website everytime you knit this file).  (We do want the grader to be able to see the code, though, as you'll only submit this one knit PDF to Gradescope.)
+
+
+
+```
+
+
+\newpage 
+3. Load `marathon.csv` into this file.  Then, run the code below to create the variable `time_minutes`.  (Note that R will yield a message "Expected 4 pieces ..."; this has to do with the `separate` function and the fact that we're saying to separate one variable into four variables, but not all rows will have the "extra" piece; so, you can ignore this message in this instance).  
+
+Create a visualization to show how the winning time has changed over the years, separated out (in some way) by gender and type.  Interpret the plot.
+
+> ANSWER: 
+
+```{r}
+marathon2 <- marathon %>%
+  mutate(time_temp1 = as.character(Time)) %>%
+  filter(time_temp1 != "N/A") %>%
+  separate(time_temp1, into = c("hours", "minutes", "seconds","extra")
+          , convert = TRUE) %>%
+  mutate(time_minutes = (hours*60) + minutes + (seconds/60))
+```
+
+
+\newpage
+## Brainy Quotes
+
+1. Confirm (using an R command) that automated scraping of the Brainy Quote webpage (https://www.brainyquote.com/) is allowed.
+
+```{r}
+
+```
+
+
+\newpage
+2.  Life can get frustrating at times.  Like when we're trying to use R/RStudio and the Amherst server seems forever stalled on the perpetual loading symbol.  Or when we can't figure out why R's throwing an error when we try to clone our own GitHub repo in R.  Or, when COVID-19 hits and we're bound to a semester of remote learning.  In these times, it can't hurt to be reminded of the power of persistence, resilience and optimism. 
+
+The code in the first R code chunk below scrapes the first 26 quotes returned from a search for "resilience" on BrainyQuote.com. (Do NOT remove the "eval = FALSE" option from that code chunk; you do not want it to evaluate it, i.e. scrape the site, every time you knit this file.)
+
+The code in the second R code chunk below randomly selects a quote and prints it.  When you're feeling frustrated, run that code chunk to randomly generate a quote to lift you up (or just make you laugh at the uselessness of the quote; some of them are pretty pathetic . . .).
+
+Note that CSS selector gadget was used to identify the key words to specify in the `html_nodes` function (i.e. ".oncl_q" and ".oncl_a").  These key words will vary depending on what webpage and what particular objects from that webpage you're trying to scrape.
+
+
+```{r, eval = FALSE}
+quotes_html <- read_html("https://www.brainyquote.com/topics/resilience-quotes")
+
+quotes <- html_nodes(quotes_html, ".oncl_q") %>%
+  html_text()
+
+person <- html_nodes(quotes_html, ".oncl_a") %>%
+  html_text()
+
+quotes_dat <- data.frame(person = person, quote = quotes
+                         , stringsAsFactors = FALSE) %>%
+  mutate(together = paste('"', as.character(quote), '" --'
+                          , as.character(person), sep=""))
+```
+
+
+```{r, linewidth = 60}
+quotes_dat <- read.csv("http://kcorreia.people.amherst.edu/F1920/resilience_quotes.csv"
+                       , stringsAsFactors = FALSE)
+
+quote_for_the_day <- quotes_dat[sample(1:nrow(quotes_dat), size = 1),"together"]
+
+cat(quote_for_the_day)
+```
+
+Go to BrainyQuote.com and search a different topic (or search an Author) that interests you.  Scrape the webpage returned from your search following the same code given above.   Save your code in an R script called `quotes.R`, and write the data frame out to a csv file called `quotes.csv` using the `write_csv` function. 
+
+```{r, eval = FALSE}
+## Add your code that is in quotes.R to this code chunk.  KEEP the "eval=FALSE" option in this code chunk option, as you do NOT want to evaluate it (which would re-scrape the website everytime you knit this file).  (We do want the grader to be able to see the code, though, as you'll only submit this one knit PDF to Gradescope.)
+
+
+```
+
+
+\newpage
+3. Load `quotes.csv` into this file.  Write code to select *three* of the quotes at random and print them. 
+
+```{r, linewidth = 60}
+
+
+```
+
+
+\newpage
+# PART 2: SQL
+
+1.  The code chunk below contains code to view the fields available in the `gsod` table within Google's sample datasets.  From Google, the `gsod` dataset "contains weather information collected by NOAA, such as precipitation amounts and wind speeds from late 1929 to early 2010."  How many fields (variables) are there in `gsod`?  (You don't have to write any code for this question; just run the code in the chunk below after updating XXXX and YYYY  to your relevant JSON file and project ID, respectively.)
+
+> SOLUTION:
+
+```{r}
+library(bigrquery)  
+library(DBI)
+options(gargle_quiet = FALSE)
+
+# change XXXX to the name of your json file that is stored in the same folder as this Rmd file
+bq_auth(path = "XXXX.json")  
+
+# change YYYY to your project id 
+myproject <- "YYYY"    
+
+# use the dbConnect command to establish the connection with Google's sample datasets
+con <- dbConnect( 
+  bigrquery::bigquery(),
+  project = "publicdata",
+  dataset = "samples",
+  billing = myproject
+)
+
+# identifies what fields are available in the gsod table
+dbListFields(con, "gsod")
+```
+
+
+2.  The code below identifies the `station_number` associated with a weather station on Nantucket Island in Massachusetts.  It then creates a dataset that includes the average temperature by month for that station.  Lastly, a simple plot of average temperature by month is created.  
+
+Update the code to assign `query_stations` to identify the stations in the state (or country) in which you're currently residing.  Then, look at the `sites` object and choose one of the stations in your state/country (if in Massachusetts, pick a different station other than the one choosen here).  Note that the field `usaf` in `sites` corresponds to the field `station_number` in `gsod`.  Update the query and plot for the Nantucket station to a query and plot for your station.  (Be sure to update the title of the plot as well.) 
+
+```{r}
+# the stations table indicates the location of the stations
+dbListFields(con, "bigquery-public-data.noaa_gsod.stations")
+
+# identify stations in Massachusetts
+query_stations <- bq_project_query(x = myproject
+                    , query = "SELECT *
+                               FROM `bigquery-public-data.noaa_gsod.stations`
+                               WHERE country = 'US' AND state = 'MA'")
+
+# create a dataset "sites" that contain info on (up to 100) sites in Massachusetts
+sites <- bq_table_download(query_stations, max_results = 100)
+
+# identified station_number for a Nantucket station in sites
+# getting average temp by month for Nantucket since 2000
+query_nantucket <- bq_project_query(x = myproject
+                    , query = "SELECT month, AVG(mean_temp) as avg_mean_temp
+                                           , MIN(year) as first_year
+                                           , MAX(year) as last_year
+                               FROM `publicdata.samples.gsod` 
+                               WHERE station_number = 994046 AND year > 2000
+                               GROUP BY month
+                               ORDER BY month")   
+
+nantucket <- bq_table_download(query_nantucket, max_results = 12)
+
+# plotting average temp by month for Nantucket station
+ggplot(data = nantucket, aes(x = month, y = avg_mean_temp)) +
+  geom_line() + 
+  geom_point() +
+  labs(x="Month", y = "Average temperature"
+       , title = "Average Temperature on Nantucket by Month, 2008 - 2010") +
+  scale_x_continuous(breaks=c(1:12))
+```
+
+
