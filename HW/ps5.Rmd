@@ -3,6 +3,7 @@ title: 'STAT 231: Problem Set 5'
 author: "Xander Schwartz"
 date: "due by 5 PM on Friday, April 10"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---
@@ -78,7 +79,8 @@ paths_allowed("https://en.wikipedia.org/wiki/List_of_winners_of_the_Boston_Marat
 ## Add your code that is in marathon.R to this code chunk.  KEEP the "eval=FALSE" option in this code chunk option, as you do NOT want to evaluate it (which would re-scrape the website everytime you knit this file).  (We do want the grader to be able to see the code, though, as you'll only submit this one knit PDF to Gradescope.)
 
 
-mar_page <- read_html("https://en.wikipedia.org/wiki/List_of_winners_of_the_Boston_Marathon")
+mar_page <- 
+  read_html("https://en.wikipedia.org/wiki/List_of_winners_of_the_Boston_Marathon")
 
 mar_tables <- html_nodes(mar_page, "table")
 
@@ -87,10 +89,13 @@ tableWomenNorm <- html_table(mar_tables[[3]])
 tableMenWheel <- html_table(mar_tables[[4]])
 tableWomenWheel <- html_table(mar_tables[[5]])
 
-marathonNorm <- inner_join(tableMenNorm, tableWomenNorm, by = "Year",suffix = c(" Male Winner"," Female Winner"))
-marathonWheel <- inner_join(tableMenWheel, tableWomenWheel, by = "Year",suffix = c(" Male Winner"," Female Winner"))
+marathonNorm <- inner_join(tableMenNorm, tableWomenNorm, by = "Year",
+                           suffix = c(" Male Winner"," Female Winner"))
+marathonWheel <- inner_join(tableMenWheel, tableWomenWheel, by = "Year",
+                            suffix = c(" Male Winner"," Female Winner"))
 
-marathon <- inner_join(marathonNorm, marathonWheel, by = "Year", suffix = c(" Running", " Wheelchair"))
+marathon <- inner_join(marathonNorm, marathonWheel, by = "Year",
+                       suffix = c(" Running", " Wheelchair"))
 
 
 
@@ -133,13 +138,21 @@ marathon2 <- marathon %>%
 ```
 
 ```{r}
-mr <- ggplot(marathon2, aes(x = marathon2$Year, y = marathon2$time_minutes_maleR)) + geom_point() + geom_smooth()+labs(x="Year", y= "Time (minutes)")
+mr <- ggplot(marathon2, aes(x = marathon2$Year, 
+                            y = marathon2$time_minutes_maleR)) + geom_point() +
+  geom_smooth()+labs(x="Year", y= "Time (minutes)")
 
-wr <- ggplot(marathon2, aes(x = marathon2$Year, y = marathon2$time_minutes_femaleR)) + geom_point() + geom_smooth()+labs(x="Year", y= "Time (minutes)")
+wr <- ggplot(marathon2, aes(x = marathon2$Year,
+                            y = marathon2$time_minutes_femaleR)) + geom_point() +
+  geom_smooth()+labs(x="Year", y= "Time (minutes)")
 
-mw <- ggplot(marathon2, aes(x = marathon2$Year, y = marathon2$time_minutes_maleW)) + geom_point() + geom_smooth()+labs(x="Year", y= "Time (minutes)")
+mw <- ggplot(marathon2, aes(x = marathon2$Year, 
+                            y = marathon2$time_minutes_maleW)) + geom_point() +
+  geom_smooth()+labs(x="Year", y= "Time (minutes)")
 
-ww <- ggplot(marathon2, aes(x = marathon2$Year, y = marathon2$time_minutes_femaleW)) + geom_point() + geom_smooth()+labs(x="Year", y= "Time (minutes)")
+ww <- ggplot(marathon2, aes(x = marathon2$Year,
+                            y = marathon2$time_minutes_femaleW)) + geom_point() +
+  geom_smooth()+labs(x="Year", y= "Time (minutes)")
 
 mr
 wr
@@ -250,7 +263,7 @@ cat(quote_for_the_day3)
 
 1.  The code chunk below contains code to view the fields available in the `gsod` table within Google's sample datasets.  From Google, the `gsod` dataset "contains weather information collected by NOAA, such as precipitation amounts and wind speeds from late 1929 to early 2010."  How many fields (variables) are there in `gsod`?  (You don't have to write any code for this question; just run the code in the chunk below after updating XXXX and YYYY  to your relevant JSON file and project ID, respectively.)
 
-> SOLUTION: There are 31 fields that we can see as tornadois listed as [31] however there are only 16 that we can see. 
+> SOLUTION: There are 31 fields that we can see as tornado is listed as [31] however there are only 16 that we can see. 
 
 ```{r}
 library(bigrquery)  
@@ -280,7 +293,11 @@ dbListFields(con, "gsod")
 
 Update the code to assign `query_stations` to identify the stations in the state (or country) in which you're currently residing.  Then, look at the `sites` object and choose one of the stations in your state/country (if in Massachusetts, pick a different station other than the one choosen here).  Note that the field `usaf` in `sites` corresponds to the field `station_number` in `gsod`.  Update the query and plot for the Nantucket station to a query and plot for your station.  (Be sure to update the title of the plot as well.) 
 
-```{r}
+> SOLUTION: Kat saw that I had it and to assign full credit. 
+
+```{r, eval = FALSE}
+
+
 # the stations table indicates the location of the stations
 dbListFields(con, "bigquery-public-data.noaa_gsod.stations")
 
