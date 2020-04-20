@@ -1,0 +1,300 @@
+---
+title: "STAT 231-01 Spring 2020"
+author: "Xander Schwartz"
+date: "due by 10AM EDT on Wednesday, April 22"
+output:
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    df_print: paged
+subtitle: Exam
+---
+
+This examination is due by Wednesday, April 22 at 10:00 AM EDT via Gradescope.  You are allowed to spend as much time on it as you want/need, but I've written it so that it should take about 80 minutes.
+
+You are NOT allowed to consult or discuss these questions in any way with any Statistics & Data Science Fellow, any peers in the class, or anyone else other than the instructor.  
+
+You may refer to any course materials while working on the exam (textbook, labs, problem sets, the Moodle webpage), as well as other textbooks or internet websites.  If you use sources that are not from our course, please list them below.
+
+Corey Michalos (our Director of Community Standards) shared [this video](https://www.youtube.com/watch?v=Gomg-PrQUTk) with me to share with the class.
+
+It's a Ted talk in which Dan Ariely discusses "our buggy moral code", and is about 16 minutes long.  Please watch the video before working on the exam.  Unlike MIT (at the time of that video anyways), Amherst College *does* have an honor code, and it is just as important that you follow the honor code now as it was when we were on campus. 
+
+In case of potential errors or ambiguity on the exam, please note them and state your assumptions. 
+
+*I agree to the above rules.  I affirm that I will not give or receive any unauthorized help on this exam, that all work will be my own, and that I will comply with the Amherst College Honor Code.*
+
+\vspace{0.2in}
+
+> Type your full name here to sign:  Xander Schwartz
+
+### List any other sources used here:
+
+> OTHER SOURCES: https://stackoverflow.com/questions/3991905/sum-rows-in-data-frame-or-matrix
+
+
+
+```{r, setup, include=FALSE}
+library(tidyverse)
+library(janitor)
+library(textdata)
+library(tidytext)
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+\newpage
+# JetBlue
+
+Suppose you're working as a Data Scientist for the airline company JetBlue.  Your boss, interested in brand management, has asked you to explore what people are saying on social media about JetBlue versus about their competitor, Southwest.
+
+1a. Start by creating an informative graphic on the most common words used in tweets referencing JetBlue, versus the most common words used in tweets referencing their competitor, Southwest.  Your graphic can take the form of bar charts, word clouds, or other type of graph so long as it displays the relevant information.  What information does your graphic convey?
+
+> ANSWER:   I created two word clouds - one for JetBlue (the blue one) and another for SouthWest (the red one). Each word cloud conveys the fifty most common words used in tweets referring to the airline. The size of the word is relative to how often the words appears. The words are fairly similar, with a lot of references to airports and time, but there are some small differences such as "tv" appearing on JetBlue and "nuts" appearing on SouthWest, both staples of their respective airline (I also love that JetBlue's word cloud includes "Maimi' but not "Miami". 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidytext)
+library(wordcloud)
+library(textdata)
+
+airline_tweets <- read_csv("http://kcorreia.people.amherst.edu/S1920/AirlineTweets.csv")
+
+sw_airline_tweets <- airline_tweets %>% filter(str_detect(text,"southwestair"))
+jb_airline_tweets <- airline_tweets %>% filter(str_detect(text,"jetblue"))
+
+southWestTweetWords <- sw_airline_tweets %>%
+  unnest_tokens(output = word, input = text) %>%
+  anti_join(stop_words, by="word") %>%
+  count(word, sort = TRUE)
+
+sw <- southWestTweetWords %>%filter(!str_detect(word, "southwest")) %>%
+  with(wordcloud(word, n, max.words=50, color = "red"))
+
+
+jetBlueTweetWords <- jb_airline_tweets %>%
+  unnest_tokens(output = word, input = text) %>%
+  anti_join(stop_words, by="word") %>%
+  count(word, sort = TRUE)
+
+jb <- jetBlueTweetWords %>% filter(!str_detect(word, "jetblue")) %>%
+  with(wordcloud(word, n, max.words=50, color = "blue"))
+
+sw
+jb
+```
+
+1b. At your boss's request, you compute the tf-idfs.  (Note you do NOT actually need to do this computation for this problem.)  You find that the word "delay" has a tf-idf value of 0.77 for this tweet: 
+
+"@SouthwestAir Another delay. Wow"  
+
+and the word "delay" has a tf-idf value of 0.018 for this tweet: 
+
+"@JetBlue 2nd time in a row a flight out of jfk a disaster. Last time I wasn't allowed to fly stndby, now a 2 hour delay w/out notification"
+
+Your co-worker (also working on this project with you), doesn't understand how the tf-idf can be so different for the same word.  In 3-6 sentences, explain to her how this can be and what those values imply for those two tweets.  Include in your explanation what the "tf" and "idf" represent in tf-idf.  (And, don't just state the textbook definition; explain in *this particular context*.)
+
+> ANSWER:  The value of the td-idf is a measure of how frequently a word appears in a "document" (some sort of text) relative to how often is appears in other documents and is a fixed value for each word. In this example, delay represents 1/4 of the words in "@SouthwestAir Another delay. Wow"  but a much lower proportion of the second tweet, so when both values (the tf) are multiplied by a fixed value (the idf) the first tweet will have a higher td_idf because the first tweet has a larger proportion. 
+
+
+
+1c. Moving on to sentiment analysis of the tweets, classify words in the tweets to the different sentiments included in the NRC lexicon.  (Note that the same word can be associated with multiple sentiments.)  Also, keep words that are in the tweets but are not assigned a sentiment -- assign them as "unidentified".  Create a bar chart comparing the number of words associated with each sentiment (or unidentified) between tweets that reference JetBlue and tweets that reference Southwest.  How do they compare?  What are the most common sentiments identified for each airline carrier?
+
+> ANSWER: For SouthWest, the most common sentniments are anticipation, positive, and trust, while for JetBlue they are postive, negatives and sadness. It seems like from the sentimaents that people are more happy with SouthWest than JetBlue. 
+
+```{r}
+
+
+nrc_lexicon <- get_sentiments("nrc")
+
+
+
+jb_sent <- jetBlueTweetWords %>%
+  full_join(nrc_lexicon, by = "word") %>%
+  arrange(sentiment, desc(n)) %>%
+  group_by(sentiment) %>%
+  slice(1:10) 
+
+jb_sent <- jb_sent %>% mutate(sentiment2 = ifelse(is.na(sentiment),"unidentified",sentiment)) %>%
+  filter(!str_detect(word, "jetblue"))%>%mutate(airline = "JetBlue")
+
+sw_sent <- southWestTweetWords %>%
+  full_join(nrc_lexicon, by = "word") %>%
+  arrange(sentiment, desc(n)) %>%
+  group_by(sentiment) %>%
+  slice(1:10) 
+
+sw_sent <- sw_sent %>% mutate(sentiment2 = ifelse(is.na(sentiment),"unidentified",sentiment)) %>%
+  filter(!str_detect(word, "southwest"))%>%mutate(airline = "SouthWest")
+
+sents = full_join(jb_sent, sw_sent)
+
+
+jb <- ggplot(jb_sent, aes(x = sentiment2, y = n, fill = airline)) + geom_col() + xlab("Sentiment") + ylab("Count of Sentiment") + theme(axis.text.x = element_text(angle = 90))
+  
+  sw <- ggplot(sw_sent, aes(x = sentiment2, y = n, fill = airline)) + geom_col() + xlab("Sentiment") + ylab("Count of Sentiment") + theme(axis.text.x = element_text(angle = 90))
+
+g <- ggplot(sents, aes(x = sentiment2, y = n, fill = airline)) + geom_col() + xlab("Sentiment") + ylab("Count of Sentiment") + theme(axis.text.x = element_text(angle = 90))
+
+g
+
+jb
+sw
+
+```
+
+
+1d. Lastly, let's compare the proportion of delayed flights between JetBlue and Southwest during the time period of these tweets (2/16/2015 - 2/24/2015).  The SQL query below is the same query as found on page 291 of the textbook, and summarizes the number of flights, the number of delays less than 2 hours, and the number of delays greater than 2 hours for every airline carrier in 2014.  Update the query to identify these summary measures *only* for JetBlue ("JetBlue Airways") and Southwest ("Southwest Airlines Co.") for days 2/16/2015 through 2/24/2015.  What proportion of JetBlue flights had a long delay during this time period?  What proportion of Southwest flights had a long delay during this time period?   
+
+> ANSWER: About 10.7% (.107) of JetBlue flights had a long delay and 6.80% (.068) of SouthWest flights had a delay during that time period. 
+
+
+```{r, warning = FALSE, message = FALSE}
+library(DBI)
+library(mdsr)
+db <- src_scidb("airlines")
+
+dbGetQuery(db$con, "SHOW TABLES")
+dbListFields(db$con, "flights")
+dbListFields(db$con, "carriers")
+dbListFields(db$con, "planes")
+dbListFields(db$con, "airports")
+
+dbGetQuery(db$con, "SELECT *
+                    FROM carriers
+                    WHERE name = 'JetBlue Airways' OR name = 'Southwest Airlines Co.'
+                    LIMIT 0,5")
+
+query <- "SELECT o.carrier, c.name
+          , sum(1) as numFlights
+          , sum(if(arr_delay > 15 AND arr_delay <= 119, 1, 0)) as shortDelay
+          , sum(if(arr_delay >= 120 OR cancelled = 1 or diverted = 1, 1, 0)) 
+                  as longDelay 
+        FROM flights o 
+        LEFT JOIN carriers c ON o.carrier = c.carrier
+        WHERE year = 2015 AND Month = 2 AND day BETWEEN 14 AND 26 AND (name = 'Southwest Airlines Co.' OR name = 'JetBlue Airways')
+        GROUP BY carrier
+        ORDER BY shortDelay desc"
+
+res <- DBI::dbGetQuery(db$con, query)
+res
+
+
+```
+
+```{r}
+sw <- res %>% filter(carrier == "WN")
+jb <- res %>% filter(carrier == "B6")
+
+jb$longDelay/jb$numFlights
+sw$longDelay/sw$numFlights
+
+```
+
+
+
+
+
+\newpage
+
+# COVID-19
+
+The code below imports daily data from the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering [JHU CSSE] (https://github.com/CSSEGISandData/COVID-19).  The `Cases` dataframe contains the daily (cumulative) number of confirmed cases of COVID-19 for countries and regions around the world.  The `Deaths` dataframe contains the daily (cumulative) number of confirmed deaths from COVID-19 for countries and regions around the world.
+
+```{r}
+base_url <-
+  paste0('https://raw.githubusercontent.com/CSSEGISandData/',
+         'COVID-19/master/csse_covid_19_data/',
+         'csse_covid_19_time_series/')
+
+filename <- 
+  paste0('time_series_covid19_', 
+         c('confirmed', 'deaths'), '_global.csv')
+
+url <- paste0(base_url, filename)
+#url
+
+Cases <- url[1] %>% 
+  read_csv(col_types = cols(
+    .default = col_double(),
+    `Province/State` = col_character(),
+    `Country/Region` = col_character()
+  ))
+
+Deaths <- url[2] %>% 
+  read_csv(col_types = cols(
+    .default = col_double(),
+    `Province/State` = col_character(),
+    `Country/Region` = col_character()
+  )) 
+```
+
+2a. How many confirmed cases of COVID-19 were there in the United States ("US") on 3/1/20?  What about on 4/19/20?
+
+> SOLUTION:  74 and 759086
+
+```{r}
+US_Cases <- Cases %>% filter(Cases$`Country/Region`=="US")
+
+#rowSums(US_Cases[5:44])
+#rowSums(US_Cases[5:93])
+
+```
+
+2b. How many COVID-19 deaths were there in the United States ("US") on 3/1/20?  What about on 4/19/20?
+
+> SOLUTION:  1 and 40661. 
+
+```{r}
+US_Deaths <- Deaths %>% filter(Cases$`Country/Region`=="US")
+
+```
+
+2c. Write a function called `plot_covid()` that has two inputs: `what` and `where`.  Have the function return a plot of Date on the x-axis and Number of Confirmed Cases *or* Number of Deaths (depending on the function input `what`) on the y-axis, for a given set of countries (depending on the function input `where`).  Allow the function to take a vector of between 1 and 10 countries.  In the plot, have separate lines that can be distinguished by a visual cue for each country.  If a user tries to plot more than 10 countries, return an informative error message.  If there are no matches, return a message stating there are no matches.
+
+Test your function on the following inputs and be sure they return the correct plot or error message:
+
+- Cases in 5 countries of your choice that are included in the dataset (code below to see what countries are included in the dataset)
+- Deaths in those same 5 countries
+- Cases in "Brasil"  (the "s" is not a typo; it's intended)
+- Deaths in the countries included in the `too_many_countries` vector below
+
+Hint: Create a long dataset with `date` (Date), `measure` (Confirmed Cases or Death), and `value` (number of confirmed cases or deaths on that date) in order to create the plot.  Code is given below to get you started.
+
+```{r, error = TRUE}
+Cases_Long <- Cases %>%
+  select(-c("Lat","Long","Province/State")) %>%
+  rename(country_region = "Country/Region") %>%
+  group_by(country_region) %>%
+  summarise_at(vars(-group_cols()), list(sum)) %>%
+  gather(value = "Value", key = "Date0", -country_region) %>%
+  mutate(measure = "Cases"
+         , date = as.Date(Date0, format = "%m/%d/%y"))
+
+# repeat for Deaths dataset, then row bind Cases_Long and Deaths_Long
+
+Deaths_Long <- Cases %>%
+  select(-c("Lat","Long","Province/State")) %>%
+  rename(country_region = "Country/Region") %>%
+  group_by(country_region) %>%
+  summarise_at(vars(-group_cols()), list(sum)) %>%
+  gather(value = "Value", key = "Date0", -country_region) %>%
+  mutate(measure = "Death"
+         , date = as.Date(Date0, format = "%m/%d/%y"))
+
+# see what countries are included in the dataset
+unique(Cases$`Country/Region`)
+
+too_many_countries <- c("Brazil", "China", "Greece", "India", "Italy"
+                        , "Kenya", "Russia", "Saudi Arabia", "Singapore", "Spain"
+                        , "Vietnam")
+
+```
+
+```{r}
+
+```
+
+
