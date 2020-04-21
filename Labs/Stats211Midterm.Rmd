@@ -32,6 +32,9 @@ In case of potential errors or ambiguity on the exam, please note them and state
 ### List any other sources used here:
 
 > OTHER SOURCES: https://stackoverflow.com/questions/3991905/sum-rows-in-data-frame-or-matrix
+https://www.datamentor.io/r-programming/if-else-statement/
+https://stackoverflow.com/questions/43233798/check-if-value-is-in-data-frame
+
 
 
 
@@ -287,6 +290,7 @@ Deaths_Long <- Cases %>%
 # see what countries are included in the dataset
 unique(Cases$`Country/Region`)
 
+
 too_many_countries <- c("Brazil", "China", "Greece", "India", "Italy"
                         , "Kenya", "Russia", "Saudi Arabia", "Singapore", "Spain"
                         , "Vietnam")
@@ -294,7 +298,63 @@ too_many_countries <- c("Brazil", "China", "Greece", "India", "Italy"
 ```
 
 ```{r}
+plot_covid <- function(countryList, data)
+{
+
+  len <- length(countryList)
+
+
+if(!countryList %in% data$country_region)
+{
+  print("Not All Countries Found")
+}
+
+data2 <- data %>% filter(country_region %in% countryList)
+
+ g <- ggplot(data2, aes(x = date, y = Value)) + 
+  geom_line(aes(color = country_region, linetype = country_region)) + xlab("Date (2020)") + ylab("Count") 
+ 
+
+
+
+ 
+ifelse(len< 10, return (g), print("Too Many Countries"))
+  
+
+  
+}
+```
+
+
+```{r}
+five_countries <- c("Brazil","China", "Italy", "US", "Russia")
+
+
+Death5c <- plot_covid(five_countries, Deaths_Long)
+
+Death5c
+
+
 
 ```
 
+```{r}
+Cases5c <- plot_covid(five_countries, Cases_Long)
+Cases5c
+```
+
+
+```{r}
+
+tooMany <- plot_covid(too_many_countries, Deaths_Long)
+
+tooMany
+```
+
+```{r}
+misspelled <- c("Brasil","China", "Italy", "US", "Russia")
+
+brasil <- plot_covid(misspelled,Deaths_Long)
+brasil
+```
 
