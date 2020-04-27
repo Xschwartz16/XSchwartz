@@ -1,0 +1,224 @@
+---
+title: 'STAT 231: Problem Set 6'
+author: "Xander Schwartz"
+date: "due by 5 PM on Wednesday, April 29"
+output: pdf_document
+---
+
+This homework assignment is designed to help you futher ingest, practice, and expand upon the material covered in class over the past week(s).  You are encouraged to work with other students, but all code and text must be written by you, and you must indicate below who you discussed the assignment with (if anyone).  
+
+Steps to proceed:
+
+\begin{enumerate}
+\item In RStudio, go to File > Open Project, navigate to the folder with the course-content repo, select the course-content project (course-content.Rproj), and click "Open" 
+\item Pull the course-content repo (e.g. using the blue-ish down arrow in the Git tab in upper right window)
+\item Copy ps6.Rmd from the course repo to your repo (see page 6 of the GitHub Classroom Guide for Stat231 if needed)
+\item Close out of the course repo project in RStudio
+\item Open up your repo project in RStudio
+\item In the ps6.Rmd file in YOUR repo, replace "YOUR NAME HERE" with your name
+\item Add in your responses, committing and pushing to YOUR repo in appropriate places along the way
+\item Run "Knit PDF" 
+\item Upload the pdf to Gradescope
+\end{enumerate}
+
+```{r, setup, include=FALSE}
+library(tidyverse)
+library(janitor)
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+\newpage 
+# If you discussed this assignment with any of your peers, please list who here:
+
+> ANSWER:
+
+\newpage
+# Simulation
+
+Update your sampling distribution simulation from Lab 11 to study the sampling distribution of sample maximums when the underlying data generating mechanism is a uniform distribution from 0 to 100.
+
+That is, simulate the sampling distribution of sample maximums across samples of size 10, 20, 50, 80, 100, 500, assuming the underlying population distribution is uniform(0,100).  How does the shape of the sampling distributions change across sample sizes?  How likely is it to get a maximum value above 95 in a sample of size 10?  What about in a sample of size 20? 100?
+
+> ANSWER: It narrows as the sample size increases. 
+
+```{r}
+ set.seed(20200414)
+nsim <- 500 
+sample_means <- rep(NA, nsim)
+for (i in 1:nsim){
+  sample_data <- runif(n = 500, min = 0, max = 100)
+  sample_means[i] <- mean(sample_data)
+}
+
+# Step 3b: check it!  with more complicated loops, it can be helpful to set i equal to some value (temporarily) and run each line in the loop to ensure the code is doing what you think it is doing/want it to be doing.
+
+# Step 4: summarize results in tabular of visual form, e.g.:
+sample_means_dat <- as.data.frame(sample_means)
+g <- ggplot(data = sample_means_dat, aes(x = sample_means)) +
+  geom_histogram(color="black", fill="#429ef5") +
+  labs(x = "Sample Mean", y = "Number of Samples") 
+
+g
+
+
+```
+
+\newpage
+# Networks I
+## More Migration
+
+For this problem, we'll use the same migration dataset used in Lab 12.
+
+(a) *Among all countries*, idenifty the top 5 countries *of origin* and *of destination* (separately) in 2000 using (weighted) degree centrality.  Interpret this information.
+
+> ANSWER: 
+
+```{r}
+MigrationFlows <- read_csv("http://math.carleton.edu/kstclair/data/MigrationFlows.csv")
+library(ggnetwork)
+library(igraph)
+```
+
+
+```{r}
+
+mig <- graph_from_data_frame(MigrationFlows[2:4]
+                                   , directed = TRUE)
+
+ggplot(data = ggnetwork(mig)
+       , aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_edges(curvature = 0.1
+            , arrow=arrow(type="closed", length=unit(6,"pt"))
+            , aes(color = Y2000)) +
+  geom_nodes() +
+  theme_blank() +
+  scale_color_continuous(type = "viridis")
+
+
+inDeg <- igraph::degree(mig, mode = "in")
+
+
+outDeg <- igraph::degree(mig, mode = "out")
+
+
+
+```
+
+```{r}
+inDeg
+```
+
+
+```{r}
+outDeg
+```
+
+
+(b) What is the diameter of this network (including all countries)? In 1-2 sentences, interpret this value.
+
+> ANSWER: The longest path from one point to another is 2. 
+
+```{r}
+diaGraph <- graph_from_data_frame(MigrationFlows, directed=FALSE) 
+
+diameter(diaGraph, directed = FALSE)
+
+```
+
+(c) What is the density of this network (including all countries)? In 1-2 sentences, interpret this value.
+
+> ANSWER:
+
+```{r}
+graph.density(diaGraph)
+
+```
+
+(d)  Choose 5-10 countries of interest.  Create a (directed) graph for the year 2000 to visualize the network for these countries with edge width and/or edge color corresponding to migration flow size.  Interpret the graph -- what information does it convey?
+
+> ANSWER:
+
+```{r}
+migFlow2 <- MigrationFlows %>% filter(destcode == "FRA" | destcode == "RUS" |
+                         destcode == "AUS" | destcode == "FRA" |
+                         destcode == "POL" | destcode == "QAT")
+
+mig2 <- graph_from_data_frame(migFlow2[2:4]
+                                   , directed = TRUE)
+ggplot(data = ggnetwork(mig2)
+       , aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_edges(curvature = 0.1
+            , arrow=arrow(type="closed", length=unit(6,"pt"))
+            , aes(color = Y2000)) +
+  geom_nodes() +
+  theme_blank() +
+  scale_color_continuous(type = "viridis")
+```
+
+
+\newpage
+# Networks II
+## The Small World of the Alternative Food Network
+
+In her journal article "The Small World of the Alternative Food Network", Catherine Brinkley explores the local food system around Baltimore County, Maryland.  She notes, "This robust network design helps to explain the long-term survival of local food systems despite the meteroric rise of global industrial food supply chains.  Modern alternative food networks are an example of a movement that seeks to reorient economic power structures in response to a variety of food system-related issues not limited to consumer health but including environmental impacts."  Reference:
+
+Brinkley, C. The Small World of the Alternative Food Network. *Sustainability*. 2018. 10, 2921. DOI: 10.3390/su10082921.
+
+First, consider this Figure (see knit pdf on Moodle) from the paper which serves to display examples of a global supply chain versus an alternative food network.
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{Sustainability_Fig1.png}
+\end{center}
+
+(a) What is the diameter of the network in Figure 1a? 
+
+> ANSWER: 5
+
+(b) What is the highest degree for a farm node in Figure 1a? 
+
+> ANSWER: 8
+
+(c) What is the highest degree for a farm node in Figure 1b? 
+
+> ANSWER: 7 
+
+(d) How does the *betweenness* centrality for a retailer in Figure 1a compare to that for a retailer in Figure 1b?  In 2-3 sentences, explain what this difference implies.
+
+> ANSWER: It seems superior for figure 1a, as the retailer has a more direct path to every other node on the graph. At most, it takes 3 paths to get to to any point (the farm) where as in 1b it ocould take many more paths. 
+
+Figure 5 in the paper (below) displays Baltimore County's alternative food network.
+
+\begin{center}
+\includegraphics[width=\textwidth]{sustainability_Fig5.png}
+\end{center}
+
+(e) Is this a connected network?  In one sentence, please explain your response and what it implies in this context.
+
+> ANSWER:
+
+(f) Is this a directed or undirected network?  In one sentence, please explain your response and what it implies in this context.
+
+> ANSWER:
+
+
+\newpage
+# Networks III (OPTIONAL PRACTICE)
+## Love Actually (OPTIONAL PRACTICE)
+
+Consider the figure "The Two Londons of 'Love Actually'" in this FiveThirtyEight article:  https://fivethirtyeight.com/features/the-definitive-analysis-of-love-actually-the-greatest-christmas-movie-of-our-time/
+
+(a) Based on this figure, is the network connected?  In 1-2 sentences, please explain.
+
+> ANSWER: 
+
+(b) Based on the figure, what is the (unweighted) degree for Emma Thompson?  What is the (unweighted) degree for Keira Knightley?  Explain what these values mean for these characters.
+
+> ANSWER:
+
+(c) Based on the figure, for whom would the (unweighted) betweenness centrality measure be higher: Colin Firth or Hugh Grant?  Explain what this implies. 
+
+> ANSWER:
