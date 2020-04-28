@@ -24,6 +24,8 @@ Steps to proceed:
 ```{r, setup, include=FALSE}
 library(tidyverse)
 library(janitor)
+library(dplyr)
+
 
 knitr::opts_chunk$set(
   tidy=FALSE,     # display code as typed
@@ -34,7 +36,7 @@ knitr::opts_chunk$set(
 \newpage 
 # If you discussed this assignment with any of your peers, please list who here:
 
-> ANSWER:
+> ANSWER: 
 
 \newpage
 # Simulation
@@ -76,6 +78,10 @@ For this problem, we'll use the same migration dataset used in Lab 12.
 (a) *Among all countries*, idenifty the top 5 countries *of origin* and *of destination* (separately) in 2000 using (weighted) degree centrality.  Interpret this information.
 
 > ANSWER: 
+Top 5 desitnation: POL     UKR     RUS     PAK     IND
+Top 5 origin     : DEU     RUS     PAK     IND     USA
+This means that the top five destination are where the most people migrate to and the top 5 origins are where the most people migrate from. 
+ 
 
 ```{r}
 MigrationFlows <- read_csv("http://math.carleton.edu/kstclair/data/MigrationFlows.csv")
@@ -85,37 +91,35 @@ library(igraph)
 
 
 ```{r}
+#MigrationFlows2 <- summarise_at(MigrationFlows,vars( destcode:origincode))
 
-mig <- graph_from_data_frame(MigrationFlows[2:4]
+MigrationFlowsF <- MigrationFlows %>% filter(Y2000 > 0 & sex == "Female")
+MigrationFlowsM <- MigrationFlows %>% filter(Y2000 > 0 & sex == "Male")
+
+
+MigrationFlows2 <- merge(MigrationFlowsF[2:4], MigrationFlowsM[2:4], all = TRUE)
+library(plyr)
+
+
+MigrationFlows2 <- ddply(MigrationFlows2,~destcode + origincode, summarise,Y2000=sum(Y2000))
+
+
+mig <- graph_from_data_frame(MigrationFlows2
                                    , directed = TRUE)
 
-ggplot(data = ggnetwork(mig)
-       , aes(x = x, y = y, xend = xend, yend = yend)) +
-  geom_edges(curvature = 0.1
-            , arrow=arrow(type="closed", length=unit(6,"pt"))
-            , aes(color = Y2000)) +
-  geom_nodes() +
-  theme_blank() +
-  scale_color_continuous(type = "viridis")
+#inDeg <- igraph::degree(mig, mode = "in")
 
+#outDeg <- igraph::degree(mig, mode = "out")
 
-inDeg <- igraph::degree(mig, mode = "in")
+top5in <- strength(mig, weights = E(mig)$Y2000, mode = "in")
+top5out <- strength(mig, weights = E(mig)$Y2000, mode = "out")
 
+tail(sort(top5in),5)
 
-outDeg <- igraph::degree(mig, mode = "out")
-
-
+tail(sort(top5out),5)
 
 ```
 
-```{r}
-inDeg
-```
-
-
-```{r}
-outDeg
-```
 
 
 (b) What is the diameter of this network (including all countries)? In 1-2 sentences, interpret this value.
@@ -131,7 +135,7 @@ diameter(diaGraph, directed = FALSE)
 
 (c) What is the density of this network (including all countries)? In 1-2 sentences, interpret this value.
 
-> ANSWER:
+> ANSWER: The average edges per node is 3.97. 
 
 ```{r}
 graph.density(diaGraph)
@@ -140,23 +144,34 @@ graph.density(diaGraph)
 
 (d)  Choose 5-10 countries of interest.  Create a (directed) graph for the year 2000 to visualize the network for these countries with edge width and/or edge color corresponding to migration flow size.  Interpret the graph -- what information does it convey?
 
-> ANSWER:
+> ANSWER: The graph shows the various connections between the five countries. Thicker lines represent more connections between the country. 
 
 ```{r}
-migFlow2 <- MigrationFlows %>% filter(destcode == "FRA" | destcode == "RUS" |
+migFlow2 <- MigrationFlows2 %>% filter((destcode == "FRA" | destcode == "RUS" |
                          destcode == "AUS" | destcode == "FRA" |
-                         destcode == "POL" | destcode == "QAT")
+                         destcode == "POL" | destcode == "QAT")&
+                        (origincode == "FRA" | origincode == "RUS" |
+                         origincode == "AUS" | origincode == "FRA" |
+                         origincode == "POL" | origincode == "QAT"))
 
-mig2 <- graph_from_data_frame(migFlow2[2:4]
-                                   , directed = TRUE)
+
+                           
+
+mig2 <- graph_from_data_frame(migFlow2, directed = TRUE)
+
+
 ggplot(data = ggnetwork(mig2)
        , aes(x = x, y = y, xend = xend, yend = yend)) +
-  geom_edges(curvature = 0.1
-            , arrow=arrow(type="closed", length=unit(6,"pt"))
-            , aes(color = Y2000)) +
+  geom_edges(arrow=arrow(type="open", length=unit(10,"pt"))
+            , color = "blue"
+            , aes(size = Y2000)) +
   geom_nodes() +
-  theme_blank() +
-  scale_color_continuous(type = "viridis")
+  theme_facet() +
+  #  geom_nodelabel(aes(label = vertex.names)) +
+  labs(size = "2000 Migration Flow") 
+
+
+
 ```
 
 
@@ -198,11 +213,11 @@ Figure 5 in the paper (below) displays Baltimore County's alternative food netwo
 
 (e) Is this a connected network?  In one sentence, please explain your response and what it implies in this context.
 
-> ANSWER:
+> ANSWER: No this is not, as some parts of the graph do not seem to connect to any other part of the graph. This means that some parts of the alternative food network are not able to interact with other parts (i.e. certain whole-sale goods have no interaction with farmers). 
 
 (f) Is this a directed or undirected network?  In one sentence, please explain your response and what it implies in this context.
 
-> ANSWER:
+> ANSWER: It appears to be undirected, which implies goods (money perhaps) are going in both directions. 
 
 
 \newpage
