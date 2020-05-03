@@ -205,7 +205,7 @@ fullTypeAtAmherst <- ggplot(may, aes (x = summary, y = length_min)) + geom_col()
 
 ```
 
-> Description: These charts show how I have used my time at Amherst and at Home. The use of time is broken into larager categories, such as TV time or School Work. 
+> Description: These charts show how I have used my time at Amherst and at Home. The use of time is broken into larger categories, such as TV time or School Work. 
 
 ```{r}
 g
@@ -311,15 +311,18 @@ questions posed.
 
 > Findings: I went into this project hoping to look at the changes in how I spent my time at school and at home. Overall, I was surprised by the lack of overall change in my time spent at Amherst and at Home. The most notable difference I found was that I spend a lot more time watching TV at home and a lot less time doing something athletic compared to Amherst (this is mostly due to no longer having a 90 minute daily team practice). Many of my other persuits remained relatively steady, such as how much time was spent on school work or sleep. 
 
-> Reflection on Answer: Despite the breakdowns of how I spent my time seeming very similar, this breakdown of how I've spent my time would seem very different if we only looked at the data without the broader categories. While at school, I may have spent my time in the dorm with friends, I am now spending that time FaceTiming or my time at Val is now replaced by family dinners. More than anything, this project serves as a reminder of that while my home life is not too far off from my time at school, it is an artificial replication.
+> Reflection on Answer: Despite the breakdowns of how I spent my time seeming very similar, this breakdown of how I've spent my time would seem very different if we only looked at the data without the broader categories. While at school, I may have spent my time in the dorm with friends, I am now spending that time FaceTiming, or my time at Val is now replaced by family dinners. More than anything, this project serves as a reminder of that while my home life is not too far off from my time at school, it is an artificial replication.
  
 \newpage
 ## Reflections 
 
 What expectations do you have when you give your data (e.g. to Facebook, Google, MapMyRun, etc.)? As someone who analyzes others’ data: What legal and ethical responsibilities do you have?
 
-> Reflection: When giving someone else my data, I think I'm pretty cynical. I expect almost anything connected to the internet is being used by some comapny to profit. I'm not sure how much that individually effects me (beyond targetted ads perhaps), but I don't think it is private. If I were creating legal and ethical regulations or acting as the data analyst, I believe that the companies should be explicit in how they are using our data. I don't nessesarily believe that companies must stop using user data, but rather that the user must have easy access to how their data is being used. Similarly, the company should have an easy opt out funcrtion as well, if the user does not want their data to be used. From doing this project, I think I am now more acutely aware of what the data can look like. While my life is pretty uninteresting in quarentine, I can imagine that at some point for me or other people that there could be items on my calendar that I wouldn't want to risk being made public (intentionally or accidentally), so perhaps I would be more wary of using certain programs/applications in which my data could be collected. 
+> Reflection: When giving someone else my data, I think I'm pretty cynical. I expect almost anything connected to the internet is being used by some comapny to profit. I'm not sure how much that individually effects me (beyond targetted ads perhaps), but I don't think it is private. If I were creating legal and ethical regulations or acting as the data analyst, I believe that the companies should be explicit in how they are using our data. I don't nessesarily believe that companies must stop using user data, but rather that the user must have easy access to how their data is being used. Similarly, the company should have an easy opt out funcrtion as well, if the user does not want their data to be collected. From doing this project, I think I am now more acutely aware of what the data can look like. While my life is pretty uninteresting in quarentine, I can imagine that at some point for me or other people that there could be items on my calendar that I wouldn't want to risk being made public (intentionally or accidentally), so perhaps I would be more wary of using certain programs/applications in which my data could be collected. 
 
+
+
+If you would like to use any part of this project on the class webpage, you are more than welcome to! 
 
 \newpage
 # References
