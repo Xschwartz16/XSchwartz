@@ -1,0 +1,85 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+Decisions (labeled by D_ in the code): 
+
+In our data, we decided to only include students who successfully graduated from Amherst College. 
+Within Amherst College, we only included people who graduated with a Bachelor of Arts 
+We combined our data so that there were six data points for study, for each student: graduation date, major, major type (single vs double/triple), graduate university, grad school type, and grad school graduation date. 
+
+
+```{r}
+# Stat231: Clearinghouse Challenge (scratch work)
+# Spring 2020
+# 
+
+# load packages here
+library(tidyverse)
+library(janitor)
+library(lubridate)
+```
+
+
+```{r}
+ # import data here
+ # do not copy the links provided here
+ # only use them to import the data while working in R on the project
+
+ demo_data <- read.csv("https://www.dropbox.com/s/e0td697qjb3l9hc/demo%20file.csv?dl=1") %>%
+   clean_names()  %>%
+#rename(temp_id = i_temp_id)
+
+ clearinghouse_data <- read.csv("https://www.dropbox.com/s/rwctyw777fodry2/002115st_398963_DETLRPT_SE_02242020121415_002115se0019.csv?dl=1") %>%
+   clean_names()
+
+cip_codes <- read.csv("https://www.dropbox.com/s/j4q7qt7di31ejfq/AC_Programs_Div_and_CIP.csv?dl=1") %>%
+  clean_names()
+```
+
+``` {r}
+
+# get acquianted with the data
+# D1
+modified <- clearinghouse_data %>%
+  filter(graduated == "Y")%>%
+  mutate(graduation_date = ymd(graduation_date))%>%
+  select(graduation_date, degree_title, requester_return_field, college_name) 
+#D2
+clear2 <- modified %>%
+  filter(college_name == "AMHERST COLLEGE" & degree_title == "BACHELOR OF ARTS")
+#What about degrees from Amherst that are not BA's?
+
+clear3 <- modified %>%
+  filter(college_name != "AMHERST COLLEGE") %>%
+  rename(post_BA = college_name,
+         Post_BA_Graduation_Date = graduation_date)
+
+#D3 
+clear4<-full_join(clear2, clear3, by = "requester_return_field", suffix = c(" BA", " Post-BA")) %>%
+  distinct(requester_return_field, .keep_all = TRUE)
+ #D3 cont
+
+demo_d<- demo_data %>%
+  rename(requester_return_field = temp_id)%>%
+  select(requester_return_field, student_program)
+#D3 cont
+
+clear5 <- inner_join(clear4, demo_d)
+#D3 cont
+clear6 <- mutate(clear5, majorType = ifelse(str_detect(clear5$student_program,"-"),"Multiple","Single"), yearsToGrad = (clear5$Post_BA_Graduation_Date-clear5$graduation_date)/365)
+clear6 <- clear6  %>% 
+  rename("college" =college_name) %>% 
+  rename("majors" =student_program) %>% 
+  rename("studentID" =requester_return_field) %>%
+  rename("gradType" =`degree_title Post-BA`) %>%
+  rename("gradSchool" =post_BA) %>%
+  rename("gradSchool_gradDate" =Post_BA_Graduation_Date) 
+
+arranged <- clear6 %>% select(c(3,4,8,9,1,7,6,5,10))
+
+```
+
+

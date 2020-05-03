@@ -1,0 +1,43 @@
+---
+title: "ClearingHouseDataWrangle"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+
+# demo_data <- read.csv("https://www.dropbox.com/s/e0td697qjb3l9hc/demo%20file.csv?dl=1") %>%
+#   clean_names() %>%
+#   rename(temp_id = i_temp_id)
+
+clearinghouse_data <- read.csv("https://www.dropbox.com/s/rwctyw777fodry2/002115st_398963_DETLRPT_SE_02242020121415_002115se0019.csv?dl=1") %>%
+  clean_names()
+```
+
+``` {r cars}
+
+clearWrangle <- clearinghouse_data%>%
+  filter(college_name=="AMHERST COLLEGE"& degree_major_1!="")%>%
+  select(c(1,18,20,22),)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
